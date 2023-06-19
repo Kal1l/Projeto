@@ -2,6 +2,8 @@
 #include<stdlib.h>
 #include<string.h>
 #include <time.h>
+#include "AVL/avlT.h"
+#include "hash/hash.h"
 
 int separar_ddd(char* numero){
     int i;char* aux=NULL;
@@ -28,3 +30,12 @@ char* numAleatorio(int ddd){
     return num;
 }
 
+int novo_num(char* nome,char* numero,char* endereco){
+
+    
+}
+int main(){
+    int opc;
+    printf("Seleciona a operacao desejada:\n1-Adiciona novo numero\n2-Remove numero\n3-Busca Aproximada\n4-Listagem de numeros(por ddd)\n");
+    return 0;
+}

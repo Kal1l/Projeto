@@ -24,7 +24,7 @@ int char_nao_num(char* string){
     return 0;
 }
 //Retorna o maior entre dois números
-int max(int a, int b) {
+int maximo(int a, int b) {
     return (a > b) ? a : b;
 }
 //Retorna altura da árvore
@@ -67,8 +67,8 @@ No* rotacao_direita(No* y) {
     x->dir = y;
     y->esq = T2;
 
-    y->alt = max(altura(y->esq), altura(y->dir)) + 1;
-    x->alt = max(altura(x->esq), altura(x->dir)) + 1;
+    y->alt = maximo(altura(y->esq), altura(y->dir)) + 1;
+    x->alt = maximo(altura(x->esq), altura(x->dir)) + 1;
 
     return x;
 }
@@ -80,8 +80,8 @@ No* rotacao_esquerda(No* x) {
     y->esq = x;
     x->dir = T2;
 
-    x->alt = max(altura(x->esq), altura(x->dir)) + 1;
-    y->alt = max(altura(y->esq), altura(y->dir)) + 1;
+    x->alt = maximo(altura(x->esq), altura(x->dir)) + 1;
+    y->alt = maximo(altura(y->esq), altura(y->dir)) + 1;
 
     return y;
 }
@@ -107,7 +107,7 @@ No* insere_no(No* raiz, char* numero, char* nome, char* endereco) {
         // O número já existe na árvore
         return raiz;
     }
-    raiz->alt = 1 + max(altura(raiz->esq), altura(raiz->dir));
+    raiz->alt = 1 + maximo(altura(raiz->esq), altura(raiz->dir));
     int balanceamento = fator_balanceamento(raiz);
     // Casos de balanceamento
     if (balanceamento > 1 && strcmp(numero, raiz->esq->numero) < 0) {
@@ -180,7 +180,7 @@ No* remover_no(No* raiz, char* numero) {
     if (raiz == NULL) {
         return raiz;
     }
-    raiz->alt = 1 + max(altura(raiz->esq), altura(raiz->dir));
+    raiz->alt = 1 + maximo(altura(raiz->esq), altura(raiz->dir));
     int balanceamento = fator_balanceamento(raiz);
 
     // Casos de balanceamento
