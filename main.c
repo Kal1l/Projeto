@@ -286,7 +286,7 @@ void imprimirTabelaHash(HashTable* hashTable) {
         printf("Posicao %d:\n", i);
 
         if (hashTable[i].raiz == NULL) {
-            printf("Usuários não encontrados.\n\n");
+            printf("Usuarios nao encontrados.\n\n");
         } else {
             imprimirEmOrdem(hashTable[i].raiz);
             printf("\n");
@@ -295,55 +295,96 @@ void imprimirTabelaHash(HashTable* hashTable) {
 }
 
 int main() {
-    HashTable* hashTable = criarHashTable();
+    HashTable tabela[HASH_SIZE];
+    int i;
 
-    inserirHashTable(hashTable, "12345678", 85, "Joao", "Rua A");
-    inserirHashTable(hashTable, "56789101", 85, "Maria", "Rua B");
-    inserirHashTable(hashTable, "90121314", 21, "Pedro", "Rua C");
-
-    imprimirTabelaHash(hashTable);
-
-    int ddd = 85;  // DDD da Ã¡rvore a ser impressa
-    int indice = calcularIndiceHash(ddd);
-    AVLNode* raiz = hashTable[indice].raiz;
-    
-    printf("\n------------1--------------\n");
-    printf("Imprimir em pre-ordem:\n");
-    imprimirPreOrdem(raiz);
-
-    printf("------------2--------------\n");
-    printf("Imprimir em ordem:\n");
-    imprimirEmOrdem(raiz);
-
-    printf("------------3--------------\n");
-    printf("Imprimir em pos-ordem:\n");
-    imprimirPosOrdem(raiz);
-    printf("---------------------------\n\n");
-
-    AVLNode* node = encontrarHashTable(hashTable, "90121314", 21);
-    if (node != NULL) {
-        printf("---CONTADO ENCONTRADO---\n");
-        printf("Numero: %s\n", node->numero);
-        printf("Nome: %s\n", node->nome);
-        printf("Endereco: %s\n", node->endereco);
+    for (i = 0; i < HASH_SIZE; i++) {
+        tabela[i].ddd = i + 1;
+        tabela[i].raiz = NULL;
     }
 
-    removerHashTable(hashTable, "56789101", 85);
+    int opcao;
+    int ddd;
+    char numero[15], nome[50], endereco[100];
 
-    printf("\nApós a remoção:\n\n");
-    imprimirTabelaHash(hashTable);
+    do {
+        printf("-  Teste -");
+        printf("\n1. Inserir novo telefone");
+        printf("\n2. Pesquisar telefone");
+        printf("\n3. Remover telefone");
+        printf("\n4. Ver Tabela Hash");
+        printf("\n5. Sair");
+        printf("\n\nDigite a opcao desejada: ");
+        scanf("%d", &opcao);
+        getchar();
+
+        switch (opcao) {
+            case 1:
+                printf("Digite o DDD: ");
+                scanf("%d", &ddd);
+                getchar();
+
+                printf("Digite o numero de telefone: ");
+                fgets(numero, sizeof(numero), stdin);
+                numero[strcspn(numero, "\n")] = '\0';
+
+                printf("Digite o nome: ");
+                fgets(nome, sizeof(nome), stdin);
+                nome[strcspn(nome, "\n")] = '\0';
+
+                printf("Digite o endereco: ");
+                fgets(endereco, sizeof(endereco), stdin);
+                endereco[strcspn(endereco, "\n")] = '\0';
+
+                inserirHashTable(tabela, numero, ddd, nome, endereco);
+                break;
+            case 2:
+                printf("\nDigite o DDD do numero a ser pesquisado: ");
+                scanf("%d", &ddd);
+                getchar();
+
+                printf("\nDigite o numero de telefone a ser pesquisado: ");
+                fgets(numero, sizeof(numero), stdin);
+                numero[strcspn(numero, "\n")] = '\0';
+
+                AVLNode* noP = encontrarHashTable(tabela, numero, ddd);
+                if(noP != NULL){
+                    printf("\n---CONTADO ENCONTRADO---\n");
+                    printf("Numero: %s\n", noP->numero);
+                    printf("Nome: %s\n", noP->nome);
+                    printf("Endereco: %s\n", noP->endereco);
+
+                }
+                break;
+            case 3:
+                printf("\nDigite o DDD do numero a ser removido: ");
+                scanf("%d", &ddd);
+                getchar();
+
+                printf("\nDigite o numero de telefone a ser removido: ");
+                fgets(numero, sizeof(numero), stdin);
+                numero[strcspn(numero, "\n")] = '\0';
+
+                removerHashTable(tabela, numero, ddd);
+                AVLNode* noE = encontrarHashTable(tabela, numero, ddd);
+                if(noE == NULL){
+                    printf("\nNumero excluído com sucesso!\n");
+                } else {
+                    printf("\nNumero nao encontrado :(\n");
+                }
+                break;
+            case 4:
+                printf("---Tabela Hash---");
+                imprimirTabelaHash(tabela);
+                break;
+            case 5:
+                printf("\nEncerrando o programa...\n");
+                break;
+            default:
+                printf("\nOpcao invalida. Por favor, escolha uma opcao valida.\n");
+                break;
+        }
+    } while (opcao != 5);
 
     return 0;
-}   
-/*char* numAleatorio(int ddd){
-    int i;char num[10];
-    //ddd de int para string
-    num[0]='9';
-    //Assegura que cada número gerado será diferente(NÃO TESTEI).
-    srand(time(NULL));
-    //Gera 8 número aleatórios
-    for (i = 3; i < 10; i++) {
-        num[i] = '0' + rand() % 10;
-    }
-    return num;
-}*/
+}
