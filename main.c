@@ -15,7 +15,7 @@ typedef struct AVLNode {
 } AVLNode;
 
 typedef struct HashTable {
-    int ddd;
+    int ddd,regiao;
     AVLNode* raiz;
 } HashTable;
 
@@ -235,6 +235,7 @@ HashTable* criarHashTable() {
     for (i = 0; i < HASH_SIZE; i++) {
         hashTable[i].ddd = i + 1;
         hashTable[i].raiz = NULL;
+        hashTable[i].regiao = NULL;
     }
 
     return hashTable;
@@ -261,6 +262,7 @@ void inserirHashTable(HashTable* hashTable, const char* numero, int ddd, const c
         }
         hashTable[indice].raiz = raiz;
     }
+    hashTable[indice].regiao=ddd;
 }
 
 void removerHashTable(HashTable* hashTable, const char* numero, int ddd) {
@@ -288,6 +290,7 @@ void imprimirTabelaHash(HashTable* hashTable) {
         if (hashTable[i].raiz == NULL) {
             printf("Usuarios nao encontrados.\n\n");
         } else {
+            printf("DDD:%d\n",hashTable[i].regiao);
             imprimirEmOrdem(hashTable[i].raiz);
             printf("\n");
         }
