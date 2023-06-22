@@ -412,7 +412,7 @@ int main() {
                 scanf("%d", &ddd);
                 getchar();
 
-                /*char* num1=malloc(9 * sizeof(char));
+                char* num1=malloc(9 * sizeof(char));
                 char* num2=malloc(9 * sizeof(char));
                 char* num3=malloc(9 * sizeof(char));
                 
@@ -426,26 +426,26 @@ int main() {
                 printf("2-%s;\n",num2);
                 printf("3-%s;\n",num3);
                 scanf(" %c", &op_num);
-                getchar();*/
+                getchar();
                 
-               /* if(op_num=='1'){ 
+                if(op_num=='1'){ 
                    strcpy(numero,num1);
                 }else if(op_num=='2'){
                     strcpy(numero,num2);
                 }else if(op_num=='3'){
                     strcpy(numero,num3);
-                }else{*/
+                }else{
                     printf("Digite o numero de telefone: ");
                     fgets(numero,10, stdin);
                     numero[strcspn(numero, "\n")] = '\0';
                     getchar();
-                /*}
+                }
                 free(num1);
                 num1=NULL;
                 free(num2);
                 num2=NULL;
                 free(num3);
-                num3=NULL;*/
+                num3=NULL;
 
                 printf("Digite o nome: ");
                 fgets(nome, sizeof(nome), stdin);
