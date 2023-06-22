@@ -4,6 +4,7 @@
 
 #define HASH_SIZE 67
 
+
 typedef struct AVLNode {
     char numero[10];
     char nome[50];
@@ -23,6 +24,8 @@ typedef struct HashTable {
     int tamanho;
     HashNode** tabela;
 } HashTable;
+
+AVLNode* encontrarArvoreNaTabela(HashTable* hashTable, int ddd);
 
 AVLNode* criarNode(const char* numero, const char* nome, const char* endereco) {
     AVLNode* node = (AVLNode*)malloc(sizeof(AVLNode));
@@ -232,7 +235,6 @@ HashTable* criarHashTable() {
     HashTable* hashTable = (HashTable*)malloc(sizeof(HashTable));
     hashTable->tamanho=HASH_SIZE;
     hashTable->tabela = (HashNode**)calloc(HASH_SIZE , sizeof(HashNode*));
-    printf("OK!");
     return hashTable;
 }
 
@@ -271,28 +273,36 @@ void removerContato(HashTable* hashTable, const char* numero, int ddd) {
     int indice = calcularIndiceHash(ddd);
     
     // Verificar se o índice está vazio
-    if(hashTable->tabela[indice]==NULL)
+    if (hashTable->tabela[indice] == NULL)
         return;
-    else{
-        HashNode* atual=hashTable->tabela[indice];
+    else {
+        HashNode* atual = hashTable->tabela[indice];
         HashNode* anterior = NULL;
+        
         // Percorrer a lista encadeada até encontrar um nó com o mesmo DDD
-        while(atual!=NULL){
-            if(atual->ddd==ddd){
-                atual->raiz=removerNodo(atual->raiz,numero);
+        while (atual != NULL) {
+            if (atual->ddd == ddd) {
+                AVLNode* arvoreAntes = encontrarArvoreNaTabela(hashTable, ddd);
+                atual->raiz = removerNodo(atual->raiz, numero);
+                AVLNode* arvoreDepois = encontrarArvoreNaTabela(hashTable, ddd);
+                
+                // Exibir a altura da árvore antes e depois da remoção
+                printf("Altura da arvore antes da remocao: %d\n", altura(arvoreAntes));
+                printf("Altura da arvore depois da remocao: %d\n", altura(arvoreDepois));
+                
                 // Se a árvore AVL estiver vazia, remover o nó da lista
-                if(atual->raiz==NULL){
-                    if(anterior==NULL){
-                        hashTable->tabela[indice]=atual->proximo;
-                    }else{
-                        anterior->proximo=atual->proximo;
+                if (atual->raiz == NULL) {
+                    if (anterior == NULL) {
+                        hashTable->tabela[indice] = atual->proximo;
+                    } else {
+                        anterior->proximo = atual->proximo;
                         free(atual);
-                    }       
+                    }
                 }
                 return;
             }
-            anterior=atual;
-            atual=atual->proximo;
+            anterior = atual;
+            atual = atual->proximo;
         }
     }
 }
@@ -355,6 +365,27 @@ char* gerarNumeroUnico(HashTable* hashTable,int ddd){
     return numero;
 }
 
+AVLNode* encontrarArvoreNaTabela(HashTable* hashTable, int ddd) {
+    int indice = calcularIndiceHash(ddd);
+
+    // Verificar se o índice está vazio
+    if (hashTable->tabela[indice] == NULL)
+        return NULL;
+    else {
+        HashNode* atual = hashTable->tabela[indice];
+        
+        // Percorrer a lista encadeada até encontrar o nó com o mesmo DDD
+        while (atual != NULL) {
+            if (atual->ddd == ddd)
+                return atual->raiz;
+            
+            atual = atual->proximo;
+        }
+    }
+    
+    return NULL;
+}
+
 
 int main() {
     HashTable* tabela = criarHashTable();
@@ -364,12 +395,13 @@ int main() {
     char numero[10], nome[50], endereco[100];
 
     do {
-        printf("-  Teste -");
+        printf("\n-  Teste -");
         printf("\n1. Inserir novo telefone");
         printf("\n2. Pesquisar telefone");
         printf("\n3. Remover telefone");
         printf("\n4. Ver Tabela Hash");
-        printf("\n5. Sair");
+        printf("\n5. Listar numeros de um DDD");
+        printf("\n6. Sair");
         printf("\n\nDigite a opcao desejada: ");
         scanf("%d", &opcao);
         getchar();
@@ -458,7 +490,7 @@ int main() {
                 removerContato(tabela, numero, ddd);
                 AVLNode* noE = encontrarHashTable(tabela, numero, ddd);
                 if(noE == NULL){
-                    printf("\nNumero excluído com sucesso!\n");
+                    printf("\nNumero excluido com sucesso!\n");
                 } else {
                     printf("\nNumero nao encontrado :(\n");
                 }
@@ -468,13 +500,50 @@ int main() {
                 imprimirTabelaHash(tabela);
                 break;
             case 5:
+                printf("Digite o DDD: ");
+                scanf("%d", &ddd);
+                getchar();
+                AVLNode* arvore = encontrarArvoreNaTabela(tabela, ddd);
+    
+                if (arvore == NULL)
+                    printf("Arvore nao encontrada para o DDD especificado.\n");
+                else {
+                    printf("\nArvore encontrada para o DDD %d.\n", ddd);
+                    int opcao;
+
+                    do{
+                        printf("Deseja lista-la em: \n");
+                        printf("\n1. Pre-Ordem");
+                        printf("\n2. Em-Ordem");
+                        printf("\n3. Pos-Ordem");
+                        printf("\n4. Sair para o Menu principal\n");
+                        scanf("%d", &opcao);
+                
+                        switch (opcao)
+                        {
+                            case 1:
+                            imprimirPreOrdem(arvore);
+                            break;
+                            case 2:
+                            imprimirEmOrdem(arvore);
+                            break;
+                            case 3:
+                            imprimirPosOrdem(arvore);
+                            default:
+                            printf("\nOpcao invalida. Por favor, escolha uma opcao valida.\n");
+                            break;
+                        }
+                    } while(opcao != 4);
+                }
+                break;
+            case 6:
                 printf("\nEncerrando o programa...\n");
                 break;
             default:
                 printf("\nOpcao invalida. Por favor, escolha uma opcao valida.\n");
                 break;
         }
-    } while (opcao != 5);
+    } while (opcao != 6);
 
     return 0;
 } 
