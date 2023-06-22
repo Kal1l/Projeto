@@ -293,6 +293,18 @@ void imprimirTabelaHash(HashTable* hashTable) {
         }
     }
 }
+char* gerarNumeroUnico(HashTable* hashTable,int ddd){
+    char* numero = malloc(9 * sizeof(char));
+    numero[0]='9';
+    do{
+         for (int i = 1; i < 9; i++) {
+            numero[i] = '0' + rand() % 10;
+        }
+        numero[9]='\0';
+    }while(encontrarHashTable(hashTable,numero,ddd));
+    return numero;
+}
+
 
 int main() {
     HashTable tabela[HASH_SIZE];
@@ -305,7 +317,7 @@ int main() {
 
     int opcao;
     int ddd;
-    char numero[15], nome[50], endereco[100];
+    char numero[10], nome[50], endereco[100];
 
     do {
         printf("-  Teste -");
@@ -324,9 +336,39 @@ int main() {
                 scanf("%d", &ddd);
                 getchar();
 
-                printf("Digite o numero de telefone: ");
-                fgets(numero, sizeof(numero), stdin);
-                numero[strcspn(numero, "\n")] = '\0';
+                char* num1=malloc(9 * sizeof(char));
+                char* num2=malloc(9 * sizeof(char));
+                char* num3=malloc(9 * sizeof(char));
+                
+                num1=gerarNumeroUnico(tabela,ddd);
+                num2=gerarNumeroUnico(tabela,ddd);
+                num3=gerarNumeroUnico(tabela,ddd);
+                char op_num;
+
+                printf("Selecione um dos numeros abaixo(Para inserir o numero voce mesmo, insira qualquer outro valor):\n");
+                printf("1-%s;\n",num1);
+                printf("2-%s;\n",num2);
+                printf("3-%s;\n",num3);
+                scanf(" %c", &op_num);
+                getchar();
+                
+                if(op_num=='1'){ 
+                   strcpy(numero,num1);
+                }else if(op_num=='2'){
+                    strcpy(numero,num2);
+                }else if(op_num=='3'){
+                    strcpy(numero,num3);
+                }else{
+                    printf("Digite o numero de telefone: ");
+                    fgets(numero, sizeof(numero), stdin);
+                    numero[strcspn(numero, "\n")] = '\0';
+                }
+                free(num1);
+                num1=NULL;
+                free(num2);
+                num2=NULL;
+                free(num3);
+                num3=NULL;
 
                 printf("Digite o nome: ");
                 fgets(nome, sizeof(nome), stdin);
@@ -387,4 +429,4 @@ int main() {
     } while (opcao != 5);
 
     return 0;
-}
+} 
