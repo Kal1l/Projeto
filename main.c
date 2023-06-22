@@ -1,12 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
 #define HASH_SIZE 67
 
 typedef struct AVLNode {
-    char numero[15];
+    char numero[10];
     char nome[50];
     char endereco[100];
     int altura;
@@ -14,9 +13,15 @@ typedef struct AVLNode {
     struct AVLNode* direita;
 } AVLNode;
 
-typedef struct HashTable {
-    int ddd,regiao;
+typedef struct HashNode {
+    int ddd;
     AVLNode* raiz;
+    struct HashNode* proximo;
+} HashNode;
+
+typedef struct HashTable {
+    int tamanho;
+    HashNode** tabela;
 } HashTable;
 
 AVLNode* criarNode(const char* numero, const char* nome, const char* endereco) {
@@ -29,23 +34,19 @@ AVLNode* criarNode(const char* numero, const char* nome, const char* endereco) {
     node->direita = NULL;
     return node;
 }
-
 int altura(AVLNode* node) {
     if (node == NULL)
         return 0;
     return node->altura;
 }
-
 int max(int a, int b) {
     return (a > b) ? a : b;
 }
-
 int fatorBalanceamento(AVLNode* node) {
     if (node == NULL)
         return 0;
     return altura(node->esquerda) - altura(node->direita);
 }
-
 AVLNode* rotacaoDireita(AVLNode* y) {
     AVLNode* x = y->esquerda;
     AVLNode* T2 = x->direita;
@@ -58,7 +59,6 @@ AVLNode* rotacaoDireita(AVLNode* y) {
 
     return x;
 }
-
 AVLNode* rotacaoEsquerda(AVLNode* x) {
     AVLNode* y = x->direita;
     AVLNode* T2 = y->esquerda;
@@ -71,7 +71,6 @@ AVLNode* rotacaoEsquerda(AVLNode* x) {
 
     return y;
 }
-
 AVLNode* inserir(AVLNode* node, const char* numero, const char* nome, const char* endereco) {
     if (node == NULL)
         return criarNode(numero, nome, endereco);
@@ -110,7 +109,6 @@ AVLNode* inserir(AVLNode* node, const char* numero, const char* nome, const char
 
     return node;
 }
-
 AVLNode* encontrarNodo(AVLNode* node, const char* numero) {
     if (node == NULL || strcmp(node->numero, numero) == 0)
         return node;
@@ -122,14 +120,12 @@ AVLNode* encontrarNodo(AVLNode* node, const char* numero) {
     else
         return encontrarNodo(node->direita, numero);
 }
-
 AVLNode* encontrarMenorNodo(AVLNode* node) {
     AVLNode* current = node;
     while (current->esquerda != NULL)
         current = current->esquerda;
     return current;
 }
-
 AVLNode* removerNodo(AVLNode* node, const char* numero) {
     if (node == NULL)
         return node;
@@ -187,7 +183,6 @@ AVLNode* removerNodo(AVLNode* node, const char* numero) {
 
     return node;
 }
-
 void imprimirPreOrdem(AVLNode* node) {
     if (node == NULL)
         return;
@@ -200,7 +195,6 @@ void imprimirPreOrdem(AVLNode* node) {
     imprimirPreOrdem(node->esquerda);
     imprimirPreOrdem(node->direita);
 }
-
 void imprimirEmOrdem(AVLNode* node) {
     if (node == NULL)
         return;
@@ -214,7 +208,6 @@ void imprimirEmOrdem(AVLNode* node) {
 
     imprimirEmOrdem(node->direita);
 }
-
 void imprimirPosOrdem(AVLNode* node) {
     if (node == NULL)
         return;
@@ -227,58 +220,102 @@ void imprimirPosOrdem(AVLNode* node) {
     printf("Endereco: %s\n", node->endereco);
     printf("\n");
 }
+HashNode* criarHashNode(int ddd,AVLNode* raiz){
+    HashNode* novoNo=(HashNode*)malloc(sizeof(HashNode));
+    novoNo->ddd=ddd;
+    novoNo->raiz=raiz;
+    novoNo->proximo=NULL;
+    return novoNo;
+}
 
 HashTable* criarHashTable() {
-    HashTable* hashTable = (HashTable*)malloc(HASH_SIZE * sizeof(HashTable));
-
-    int i;
-    for (i = 0; i < HASH_SIZE; i++) {
-        hashTable[i].ddd = i + 1;
-        hashTable[i].raiz = NULL;
-        hashTable[i].regiao = NULL;
-    }
-
+    HashTable* hashTable = (HashTable*)malloc(sizeof(HashTable));
+    hashTable->tamanho=HASH_SIZE;
+    hashTable->tabela = (HashNode**)calloc(HASH_SIZE , sizeof(HashNode*));
+    printf("OK!");
     return hashTable;
 }
 
 int calcularIndiceHash(int ddd) {
-    return (ddd - 1) % HASH_SIZE;
+    return ddd  % HASH_SIZE;
 }
 
-void inserirHashTable(HashTable* hashTable, const char* numero, int ddd, const char* nome, const char* endereco) {
+// Função para inserir um valor na tabela hash
+void inserirContato(HashTable* hashTable, const char* numero,int ddd,const char* nome, const char* endereco) {
     int indice = calcularIndiceHash(ddd);
-    AVLNode* raiz = hashTable[indice].raiz;
 
-    if (raiz == NULL) {
-        raiz = inserir(raiz, numero, nome, endereco);
-        hashTable[indice].raiz = raiz;
-    } else {
-        AVLNode* node = encontrarNodo(raiz, numero);
-        if (node == NULL)
-            raiz = inserir(raiz, numero, nome, endereco);
-        else {
-            strcpy(node->nome, nome);
-            strcpy(node->endereco, endereco);
+    // Verificar se o índice está vazio
+    if(hashTable->tabela[indice]==NULL){
+        AVLNode* raiz=inserir(NULL,numero,nome,endereco);
+        hashTable->tabela[indice]=criarHashNode(ddd,raiz);
+    }else{
+        HashNode* atual=hashTable->tabela[indice];
+        // Percorrer a lista encadeada até encontrar um nó com o mesmo DDD
+        while(atual->proximo!=NULL && atual->ddd!=ddd)
+            atual=atual->proximo;
+
+         // Caso já exista um nó com o mesmo DDD
+        if(atual->ddd==ddd)
+            atual->raiz=inserir(atual->raiz,numero,nome,endereco);
+        else{
+            AVLNode* raiz=inserir(NULL,numero,nome,endereco);
+            HashNode* novoNo=criarHashNode(ddd,raiz);
+            atual->proximo=novoNo;
         }
-        hashTable[indice].raiz = raiz;
     }
-    hashTable[indice].regiao=ddd;
+    printf("OK!\n");
 }
 
-void removerHashTable(HashTable* hashTable, const char* numero, int ddd) {
+// Função para deletar um valor da tabela hash
+void removerContato(HashTable* hashTable, const char* numero, int ddd) {
     int indice = calcularIndiceHash(ddd);
-    AVLNode* raiz = hashTable[indice].raiz;
-
-    if (raiz != NULL) {
-        raiz = removerNodo(raiz, numero);
-        hashTable[indice].raiz = raiz;
+    
+    // Verificar se o índice está vazio
+    if(hashTable->tabela[indice]==NULL)
+        return;
+    else{
+        HashNode* atual=hashTable->tabela[indice];
+        HashNode* anterior = NULL;
+        // Percorrer a lista encadeada até encontrar um nó com o mesmo DDD
+        while(atual!=NULL){
+            if(atual->ddd==ddd){
+                atual->raiz=removerNodo(atual->raiz,numero);
+                // Se a árvore AVL estiver vazia, remover o nó da lista
+                if(atual->raiz==NULL){
+                    if(anterior==NULL){
+                        hashTable->tabela[indice]=atual->proximo;
+                    }else{
+                        anterior->proximo=atual->proximo;
+                        free(atual);
+                    }       
+                }
+                return;
+            }
+            anterior=atual;
+            atual=atual->proximo;
+        }
     }
 }
 
 AVLNode* encontrarHashTable(HashTable* hashTable, const char* numero, int ddd) {
     int indice = calcularIndiceHash(ddd);
-    AVLNode* raiz = hashTable[indice].raiz;
-    return encontrarNodo(raiz, numero);
+
+    // Verificar se o índice está vazio
+    if (hashTable->tabela[indice] == NULL)
+        return NULL;
+    else {
+        HashNode* atual=hashTable->tabela[indice];
+        // Percorrer a lista encadeada até encontrar um nó com o mesmo DDD
+        while (atual != NULL) {
+            if (atual->ddd == ddd) {
+                AVLNode* result = encontrarNodo(atual->raiz, numero);
+                if (result != NULL)
+                    return result;
+            }
+            atual = atual->proximo;
+        }
+    }
+    return NULL;
 }
 
 void imprimirTabelaHash(HashTable* hashTable) {
@@ -287,17 +324,27 @@ void imprimirTabelaHash(HashTable* hashTable) {
     for (int i = 0; i < HASH_SIZE; i++) {
         printf("Posicao %d:\n", i);
 
-        if (hashTable[i].raiz == NULL) {
+        if (hashTable->tabela[i] == NULL) {
             printf("Usuarios nao encontrados.\n\n");
         } else {
-            printf("DDD:%d\n",hashTable[i].regiao);
-            imprimirEmOrdem(hashTable[i].raiz);
-            printf("\n");
+            HashNode* atual = hashTable->tabela[i];
+
+            while (atual != NULL) {
+                printf("DDD: %d\n", atual->ddd);
+                if (atual->raiz == NULL) {
+                    printf("Usuarios nao encontrados.\n");
+                } else {
+                    imprimirEmOrdem(atual->raiz);
+                }
+                atual = atual->proximo;
+                printf("\n");
+            }
         }
     }
 }
+
 char* gerarNumeroUnico(HashTable* hashTable,int ddd){
-    char* numero = malloc(9 * sizeof(char));
+    char* numero = malloc(10 * sizeof(char));
     numero[0]='9';
     do{
          for (int i = 1; i < 9; i++) {
@@ -310,13 +357,7 @@ char* gerarNumeroUnico(HashTable* hashTable,int ddd){
 
 
 int main() {
-    HashTable tabela[HASH_SIZE];
-    int i;
-
-    for (i = 0; i < HASH_SIZE; i++) {
-        tabela[i].ddd = i + 1;
-        tabela[i].raiz = NULL;
-    }
+    HashTable* tabela = criarHashTable();
 
     int opcao;
     int ddd;
@@ -339,7 +380,7 @@ int main() {
                 scanf("%d", &ddd);
                 getchar();
 
-                char* num1=malloc(9 * sizeof(char));
+                /*char* num1=malloc(9 * sizeof(char));
                 char* num2=malloc(9 * sizeof(char));
                 char* num3=malloc(9 * sizeof(char));
                 
@@ -353,35 +394,36 @@ int main() {
                 printf("2-%s;\n",num2);
                 printf("3-%s;\n",num3);
                 scanf(" %c", &op_num);
-                getchar();
+                getchar();*/
                 
-                if(op_num=='1'){ 
+               /* if(op_num=='1'){ 
                    strcpy(numero,num1);
                 }else if(op_num=='2'){
                     strcpy(numero,num2);
                 }else if(op_num=='3'){
                     strcpy(numero,num3);
-                }else{
+                }else{*/
                     printf("Digite o numero de telefone: ");
-                    fgets(numero, sizeof(numero), stdin);
+                    fgets(numero,10, stdin);
                     numero[strcspn(numero, "\n")] = '\0';
-                }
+                    getchar();
+                /*}
                 free(num1);
                 num1=NULL;
                 free(num2);
                 num2=NULL;
                 free(num3);
-                num3=NULL;
+                num3=NULL;*/
 
                 printf("Digite o nome: ");
                 fgets(nome, sizeof(nome), stdin);
                 nome[strcspn(nome, "\n")] = '\0';
-
+                
                 printf("Digite o endereco: ");
                 fgets(endereco, sizeof(endereco), stdin);
                 endereco[strcspn(endereco, "\n")] = '\0';
 
-                inserirHashTable(tabela, numero, ddd, nome, endereco);
+                inserirContato(tabela, numero, ddd, nome, endereco);
                 break;
             case 2:
                 printf("\nDigite o DDD do numero a ser pesquisado: ");
@@ -400,6 +442,9 @@ int main() {
                     printf("Endereco: %s\n", noP->endereco);
 
                 }
+                else{
+                    printf("Contato não encontrado!\n");
+                }
                 break;
             case 3:
                 printf("\nDigite o DDD do numero a ser removido: ");
@@ -410,7 +455,7 @@ int main() {
                 fgets(numero, sizeof(numero), stdin);
                 numero[strcspn(numero, "\n")] = '\0';
 
-                removerHashTable(tabela, numero, ddd);
+                removerContato(tabela, numero, ddd);
                 AVLNode* noE = encontrarHashTable(tabela, numero, ddd);
                 if(noE == NULL){
                     printf("\nNumero excluído com sucesso!\n");
