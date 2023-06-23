@@ -386,6 +386,129 @@ AVLNode* encontrarArvoreNaTabela(HashTable* hashTable, int ddd) {
     return NULL;
 }
 
+int contarNos(AVLNode* node) {
+    if (node == NULL)
+        return 0;
+
+    return 1 + contarNos(node->esquerda) + contarNos(node->direita);
+}
+
+void registrarNomes(AVLNode* node, char** nomes, int* indice) {
+    if (node == NULL)
+        return;
+
+    registrarNomes(node->esquerda, nomes, indice);
+
+    strcpy(nomes[*indice], node->nome);
+    (*indice)++;
+
+    registrarNomes(node->direita, nomes, indice);
+}
+
+void ordenarNomes(char** nomes, int tamanho) {
+    for (int i = 0; i < tamanho - 1; i++) {
+        for (int j = 0; j < tamanho - i - 1; j++) {
+            if (strcmp(nomes[j], nomes[j + 1]) > 0) {
+                char temp[50];
+                strcpy(temp, nomes[j]);
+                strcpy(nomes[j], nomes[j + 1]);
+                strcpy(nomes[j + 1], temp);
+            }
+        }
+    }
+}
+
+void imprimirContatoPorNome(AVLNode* node, const char* nome) {
+    if (node == NULL)
+        return;
+
+    imprimirContatoPorNome(node->esquerda, nome);
+
+    int comparacao = strcmp(node->nome, nome);
+    if (comparacao == 0) {
+        printf("Numero: %s\n", node->numero);
+        printf("Nome: %s\n", node->nome);
+        printf("Endereco: %s\n", node->endereco);
+        printf("\n");
+        
+    }
+
+    imprimirContatoPorNome(node->direita, nome);
+}
+
+void imprimirPorNomeOrdenado(AVLNode* node) {
+    int tamanho = contarNos(node);
+
+    char** nomes = (char**)malloc(tamanho * sizeof(char*));
+    for (int i = 0; i < tamanho; i++) {
+        nomes[i] = (char*)malloc(50 * sizeof(char));
+    }
+
+    int indice = 0;
+
+    registrarNomes(node, nomes, &indice);
+
+    ordenarNomes(nomes, tamanho);
+
+    for (int i = 0; i < tamanho; i++) {
+        imprimirContatoPorNome(node, nomes[i]);
+    }
+
+    for (int i = 0; i < tamanho; i++) {
+        free(nomes[i]);
+    }
+    free(nomes);
+}
+
+void imprimirArvores(HashTable* hashTable, int ordenacao) {
+    printf("Lista de arvores:\n");
+
+    // Vetor para armazenar os DDDs presentes na tabela hash
+    int ddds[HASH_SIZE];
+    int count = 0;
+
+    // Percorrer a tabela hash e preencher o vetor de DDDs
+    for (int i = 0; i < HASH_SIZE; i++) {
+        if (hashTable->tabela[i] != NULL) {
+            HashNode* atual = hashTable->tabela[i];
+            ddds[count] = atual->ddd;
+            count++;
+        }
+    }
+
+    // Ordenar os DDDs em ordem crescente
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = i + 1; j < count; j++) {
+            if (ddds[j] < ddds[i]) {
+                int temp = ddds[i];
+                ddds[i] = ddds[j];
+                ddds[j] = temp;
+            }
+        }
+    }
+
+    // Percorrer os DDDs em ordem crescente
+    for (int i = 0; i < count; i++) {
+        int ddd = ddds[i];
+        AVLNode* hashNode = encontrarArvoreNaTabela(hashTable, ddd);
+
+        if (hashNode != NULL) {
+            printf("DDD: %d\n", ddd);  // Exibir o DDD da árvore
+
+            AVLNode* raiz = hashNode;
+
+            if (ordenacao == 1) {
+                printf("Ordenacao por numero de telefone (Em-ordem):\n");
+                imprimirEmOrdem(raiz);
+            } else if (ordenacao == 2) {
+                printf("Ordenacao por nome de usuario:\n");
+                imprimirPorNomeOrdenado(raiz);
+            }
+            printf("\n");
+        }
+    }
+}
+
 
 int main() {
     HashTable* tabela = criarHashTable();
@@ -401,7 +524,8 @@ int main() {
         printf("\n3. Remover telefone");
         printf("\n4. Ver Tabela Hash");
         printf("\n5. Listar numeros de um DDD");
-        printf("\n6. Sair");
+        printf("\n6. Listar todos os numeros por DDD");
+        printf("\n7. Sair");
         printf("\n\nDigite a opcao desejada: ");
         scanf("%d", &opcao);
         getchar();
@@ -537,13 +661,37 @@ int main() {
                 }
                 break;
             case 6:
+                printf("Escolha uma das opcoes de listagem\n");
+                int opcao;
+
+                do{
+                    printf("\n1. Listar os contatos por numero");
+                    printf("\n2. Listar os contatos por nome");
+                    printf("\n3. Sair para o Menu principal\n");
+                    scanf("%d", &opcao);
+                    
+                    switch (opcao)
+                    {
+                    case 1:
+                        imprimirArvores(tabela, 1);
+                        break;
+                    case 2:
+                        imprimirArvores(tabela, 2);
+                        break;
+                    default:
+                        printf("\nOpcao invalida. Por favor, escolha uma opcao valida.\n");
+                        break;
+                    }
+                } while(opcao != 3);
+                break;
+            case 7:
                 printf("\nEncerrando o programa...\n");
                 break;
             default:
                 printf("\nOpcao invalida. Por favor, escolha uma opcao valida.\n");
                 break;
         }
-    } while (opcao != 6);
+    } while (opcao != 7);
 
     return 0;
 } 
