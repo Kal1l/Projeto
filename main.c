@@ -577,7 +577,8 @@ int main() {
         printf("\n4. Ver Tabela Hash");
         printf("\n5. Listar numeros de um DDD");
         printf("\n6. Listar todos os numeros por DDD");
-        printf("\n7. Sair");
+        printf("\n7. Busca Aproximada");
+        printf("\n8. Sair");
         printf("\n\nDigite a opcao desejada: ");
         scanf("%d", &opcao);
         getchar();
