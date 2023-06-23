@@ -549,15 +549,17 @@ void imprimirArvores(HashTable* hashTable, int ordenacao) {
 }
 void BuscaAproximada(IndiceInvertido *indice, char *consulta) {
     int i;
+    int encontrado = 0; // Variável para verificar se algum número foi encontrado
 
     for (i = 0; i < indice->quantidadeEntradas; i++) {
         char *correspondencia = strstr(indice->entradas[i].numeroTelefone, consulta);
         if (correspondencia != NULL) {
-            printf("Numero encontrados: %s\n", indice->entradas[i].numeroTelefone);
+            printf("Numero encontrado: %s\n", indice->entradas[i].numeroTelefone);
+            encontrado = 1; // Define que um número foi encontrado
         }
-        else{
-            printf("Nenhum numero encontrado.");
-        }
+    }
+    if (!encontrado) {
+        printf("Nenhum numero encontrado.\n");
     }
 }
 
@@ -568,7 +570,7 @@ int main() {
     int opcao;
     int ddd;
     char numero[10], nome[50], endereco[100];
-    char* busca=(char*)malloc(10*sizeof(char));
+    char busca[10];
     do {
         printf("\n-  Teste -");
         printf("\n1. Inserir novo telefone");
@@ -741,7 +743,7 @@ int main() {
                 break;
             case 7:
                 printf("\nDigite o numero a ser pesquisado: ");
-                fgets(busca, sizeof(strlen(busca)), stdin);
+                fgets(busca,sizeof(busca), stdin);
                 busca[strcspn(busca, "\n")] = '\0';
                 BuscaAproximada(indice,busca);
                 break;
