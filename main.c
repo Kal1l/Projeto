@@ -25,7 +25,13 @@ typedef struct HashTable {
     HashNode** tabela;
 } HashTable;
 
-AVLNode* encontrarArvoreNaTabela(HashTable* hashTable, int ddd);
+// Estrutura de um nó da lista encadeada do índice invertido
+typedef struct IndiceNode {
+    char numero[10];
+    struct Node* proximo;
+} IndiceNode;
+
+AVLNode* encontrarArvoreNaTabela(HashTable* hashTable, int ddd);//?
 
 AVLNode* criarNode(const char* numero, const char* nome, const char* endereco) {
     AVLNode* node = (AVLNode*)malloc(sizeof(AVLNode));
@@ -223,6 +229,47 @@ void imprimirPosOrdem(AVLNode* node) {
     printf("Endereco: %s\n", node->endereco);
     printf("\n");
 }
+//indice invertido
+typedef struct {
+    char numeroTelefone[10];  // Estrutura para armazenar o número de telefone
+} EntradaTelefone;
+
+typedef struct {
+    EntradaTelefone entradas[10000];  // Array de entradas telefônicas
+    int quantidadeEntradas;  // Contador para controlar a quantidade de entradas
+} IndiceInvertido;
+
+IndiceInvertido* criarIndice(){
+    IndiceInvertido* indice=(IndiceInvertido*)malloc(sizeof(IndiceInvertido));
+    indice->quantidadeEntradas=0;
+    return indice;
+}
+void adicionarIndice(IndiceInvertido *indice, char *numeroTelefone) {
+    if (indice->quantidadeEntradas < 10000) {
+        // Copia o número de telefone para a próxima posição disponível do array
+        strcpy(indice->entradas[indice->quantidadeEntradas].numeroTelefone, numeroTelefone);
+        indice->quantidadeEntradas++;  // Incrementa o contador de entradas
+    } else {
+        printf("O índice está cheio. Não é possível adicionar mais entradas.\n");
+    }
+}
+void removerIndice(IndiceInvertido *indice, const char *numeroTelefone) {
+    int i, j;
+
+    for (i = 0; i < indice->quantidadeEntradas; i++) {
+        if (strcmp(indice->entradas[i].numeroTelefone, numeroTelefone) == 0) {
+
+            // Desloca as entradas subsequentes para preencher o espaço vazio da entrada removida
+            for (j = i; j < indice->quantidadeEntradas - 1; j++) {
+                strcpy(indice->entradas[j].numeroTelefone, indice->entradas[j + 1].numeroTelefone);
+            }
+
+            indice->quantidadeEntradas--;  // Decrementa o contador de entradas
+            break;
+        }
+    }
+}
+
 HashNode* criarHashNode(int ddd,AVLNode* raiz){
     HashNode* novoNo=(HashNode*)malloc(sizeof(HashNode));
     novoNo->ddd=ddd;
@@ -230,14 +277,12 @@ HashNode* criarHashNode(int ddd,AVLNode* raiz){
     novoNo->proximo=NULL;
     return novoNo;
 }
-
 HashTable* criarHashTable() {
     HashTable* hashTable = (HashTable*)malloc(sizeof(HashTable));
     hashTable->tamanho=HASH_SIZE;
     hashTable->tabela = (HashNode**)calloc(HASH_SIZE , sizeof(HashNode*));
     return hashTable;
 }
-
 int calcularIndiceHash(int ddd) {
     return ddd  % HASH_SIZE;
 }
@@ -245,7 +290,6 @@ int calcularIndiceHash(int ddd) {
 // Função para inserir um valor na tabela hash
 void inserirContato(HashTable* hashTable, const char* numero,int ddd,const char* nome, const char* endereco) {
     int indice = calcularIndiceHash(ddd);
-
     // Verificar se o índice está vazio
     if(hashTable->tabela[indice]==NULL){
         AVLNode* raiz=inserir(NULL,numero,nome,endereco);
@@ -306,7 +350,6 @@ void removerContato(HashTable* hashTable, const char* numero, int ddd) {
         }
     }
 }
-
 AVLNode* encontrarHashTable(HashTable* hashTable, const char* numero, int ddd) {
     int indice = calcularIndiceHash(ddd);
 
@@ -327,7 +370,6 @@ AVLNode* encontrarHashTable(HashTable* hashTable, const char* numero, int ddd) {
     }
     return NULL;
 }
-
 void imprimirTabelaHash(HashTable* hashTable) {
     printf("Tabela Hash:\n");
 
@@ -352,7 +394,6 @@ void imprimirTabelaHash(HashTable* hashTable) {
         }
     }
 }
-
 char* gerarNumeroUnico(HashTable* hashTable,int ddd){
     char* numero = malloc(10 * sizeof(char));
     numero[0]='9';
@@ -364,7 +405,6 @@ char* gerarNumeroUnico(HashTable* hashTable,int ddd){
     }while(encontrarHashTable(hashTable,numero,ddd));
     return numero;
 }
-
 AVLNode* encontrarArvoreNaTabela(HashTable* hashTable, int ddd) {
     int indice = calcularIndiceHash(ddd);
 
@@ -385,7 +425,6 @@ AVLNode* encontrarArvoreNaTabela(HashTable* hashTable, int ddd) {
     
     return NULL;
 }
-
 int contarNos(AVLNode* node) {
     if (node == NULL)
         return 0;
@@ -508,15 +547,28 @@ void imprimirArvores(HashTable* hashTable, int ordenacao) {
         }
     }
 }
+void BuscaAproximada(IndiceInvertido *indice, char *consulta) {
+    int i;
 
+    for (i = 0; i < indice->quantidadeEntradas; i++) {
+        char *correspondencia = strstr(indice->entradas[i].numeroTelefone, consulta);
+        if (correspondencia != NULL) {
+            printf("Numero encontrados: %s\n", indice->entradas[i].numeroTelefone);
+        }
+        else{
+            printf("Nenhum numero encontrado.");
+        }
+    }
+}
 
 int main() {
     HashTable* tabela = criarHashTable();
+    IndiceInvertido* indice=criarIndice();
 
     int opcao;
     int ddd;
     char numero[10], nome[50], endereco[100];
-
+    char* busca=(char*)malloc(10*sizeof(char));
     do {
         printf("\n-  Teste -");
         printf("\n1. Inserir novo telefone");
@@ -553,7 +605,7 @@ int main() {
                 getchar();
                 
                 if(op_num=='1'){ 
-                   strcpy(numero,num1);
+                    strcpy(numero,num1);
                 }else if(op_num=='2'){
                     strcpy(numero,num2);
                 }else if(op_num=='3'){
@@ -580,6 +632,7 @@ int main() {
                 endereco[strcspn(endereco, "\n")] = '\0';
 
                 inserirContato(tabela, numero, ddd, nome, endereco);
+                adicionarIndice(indice,numero);
                 break;
             case 2:
                 printf("\nDigite o DDD do numero a ser pesquisado: ");
@@ -614,6 +667,7 @@ int main() {
                 removerContato(tabela, numero, ddd);
                 AVLNode* noE = encontrarHashTable(tabela, numero, ddd);
                 if(noE == NULL){
+                    removerIndice(indice,numero);
                     printf("\nNumero excluido com sucesso!\n");
                 } else {
                     printf("\nNumero nao encontrado :(\n");
@@ -685,13 +739,19 @@ int main() {
                 } while(opcao != 3);
                 break;
             case 7:
+                printf("\nDigite o numero a ser pesquisado: ");
+                fgets(busca, sizeof(strlen(busca)), stdin);
+                busca[strcspn(busca, "\n")] = '\0';
+                BuscaAproximada(indice,busca);
+                break;
+            case 8:
                 printf("\nEncerrando o programa...\n");
                 break;
             default:
                 printf("\nOpcao invalida. Por favor, escolha uma opcao valida.\n");
                 break;
         }
-    } while (opcao != 7);
+    } while (opcao != 8);
 
     return 0;
 } 
