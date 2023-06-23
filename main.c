@@ -1,9 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define HASH_SIZE 67
 
+const int ddds_brasileiros[] = {
+    11, 12, 13, 14, 15, 16, 17, 18, 19, 21,
+    22, 24, 27, 28, 31, 32, 33, 34, 35, 37,
+    38, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+    51, 53, 54, 55, 61, 62, 63, 64, 65, 66,
+    67, 68, 69, 71, 73, 74, 75, 77, 79, 81,
+    82, 83, 84, 85, 86, 87, 88, 89, 91, 92,
+    93, 94, 95, 96, 97, 98, 99
+};
+const int num_ddds_brasileiros = sizeof(ddds_brasileiros) / sizeof(ddds_brasileiros[0]);
 
 typedef struct AVLNode {
     char numero[10];
@@ -24,6 +35,12 @@ typedef struct HashTable {
     int tamanho;
     HashNode** tabela;
 } HashTable;
+
+// Estrutura de um nó da lista encadeada do índice invertido
+typedef struct IndiceNode {
+    char numero[10];
+    struct Node* proximo;
+} IndiceNode;
 
 AVLNode* encontrarArvoreNaTabela(HashTable* hashTable, int ddd);
 
@@ -265,7 +282,7 @@ void inserirContato(HashTable* hashTable, const char* numero,int ddd,const char*
             atual->proximo=novoNo;
         }
     }
-    printf("OK!\n");
+    
 }
 
 // Função para deletar um valor da tabela hash
@@ -306,6 +323,33 @@ void removerContato(HashTable* hashTable, const char* numero, int ddd) {
         }
     }
 }
+
+int gerarDDD() {
+    int indice = rand() % num_ddds_brasileiros;
+    return ddds_brasileiros[indice];
+}
+
+/*void gerarUsuariosAleatorios(HashTable* hashTable, int quantidade) {
+    const char* nomes[] = {"Alice", "Bob", "Charlie", "David", "Eva", "Frank", "Grace", "Henry", "Ivy", "Jack"};
+    const char* sobrenomes[] = {"Smith", "Johnson", "Williams", "Jones", "Brown", "Davis", "Miller", "Wilson", "Moore", "Taylor"};
+    const char* enderecos[] = {"Rua A", "Avenida B", "Travessa C", "Praça D", "Estrada E", "Avenida F", "Rua G", "Travessa H", "Rua I", "Avenida J"};
+
+    for (int i = 0; i < quantidade; i++) {
+        int ddd_index = rand() % num_ddds_brasileiros;  // Escolhe um índice aleatório para o DDD brasileiro
+        int ddd = ddds_brasileiros[ddd_index];         // Obtém o DDD correspondente ao índice aleatório
+        const char* nome = nomes[rand() % 10];
+        const char* sobrenome = sobrenomes[rand() % 10];
+        const char* endereco = enderecos[rand() % 10];
+
+        char numero[15];
+        sprintf(numero, "9%08d", rand() % 100000000);
+
+        char nomeCompleto[60];
+        snprintf(nomeCompleto, sizeof(nomeCompleto), "%s %s", nome, sobrenome);
+
+        inserirContato(hashTable, numero, ddd, nomeCompleto, endereco);
+    }
+}*/
 
 AVLNode* encontrarHashTable(HashTable* hashTable, const char* numero, int ddd) {
     int indice = calcularIndiceHash(ddd);
@@ -353,7 +397,7 @@ void imprimirTabelaHash(HashTable* hashTable) {
     }
 }
 
-char* gerarNumeroUnico(HashTable* hashTable,int ddd){
+/*char* gerarNumeroUnico(HashTable* hashTable,int ddd){
     char* numero = malloc(10 * sizeof(char));
     numero[0]='9';
     do{
@@ -362,6 +406,23 @@ char* gerarNumeroUnico(HashTable* hashTable,int ddd){
         }
         numero[9]='\0';
     }while(encontrarHashTable(hashTable,numero,ddd));
+    return numero;
+}*/
+
+char* gerarNumeroUnico(HashTable* hashTable,int ddd) {
+    char* numero = malloc(10 * sizeof(char));
+    numero[0] = '9';
+
+    do {
+        ddd = gerarDDD();
+        sprintf(numero + 1, "%02d", ddd);
+
+        for (int i = 3; i < 9; i++) {
+            numero[i] = '0' + rand() % 10;
+        }
+        numero[9] = '\0';
+    } while (encontrarHashTable(hashTable, numero, ddd));
+
     return numero;
 }
 
@@ -509,9 +570,95 @@ void imprimirArvores(HashTable* hashTable, int ordenacao) {
     }
 }
 
+//indice invertido
+typedef struct {
+    char numeroTelefone[10];  // Estrutura para armazenar o número de telefone
+} EntradaTelefone;
+
+typedef struct {
+    EntradaTelefone entradas[10000];  // Array de entradas telefônicas
+    int quantidadeEntradas;  // Contador para controlar a quantidade de entradas
+} IndiceInvertido;
+
+IndiceInvertido* criarIndice(){
+    IndiceInvertido* indice=(IndiceInvertido*)malloc(sizeof(IndiceInvertido));
+    indice->quantidadeEntradas=0;
+    return indice;
+}
+void adicionarIndice(IndiceInvertido *indice, char *numeroTelefone) {
+    if (indice->quantidadeEntradas < 10000) {
+        // Copia o número de telefone para a próxima posição disponível do array
+        strcpy(indice->entradas[indice->quantidadeEntradas].numeroTelefone, numeroTelefone);
+        indice->quantidadeEntradas++;  // Incrementa o contador de entradas
+    } else {
+        printf("O índice está cheio. Não é possível adicionar mais entradas.\n");
+    }
+}
+void removerIndice(IndiceInvertido *indice, const char *numeroTelefone) {
+    int i, j;
+
+    for (i = 0; i < indice->quantidadeEntradas; i++) {
+        if (strcmp(indice->entradas[i].numeroTelefone, numeroTelefone) == 0) {
+
+            // Desloca as entradas subsequentes para preencher o espaço vazio da entrada removida
+            for (j = i; j < indice->quantidadeEntradas - 1; j++) {
+                strcpy(indice->entradas[j].numeroTelefone, indice->entradas[j + 1].numeroTelefone);
+            }
+
+            indice->quantidadeEntradas--;  // Decrementa o contador de entradas
+            break;
+        }
+    }
+}
+
+void BuscaAproximada(IndiceInvertido *indice, char *consulta) {
+    int i;
+    int encontrado = 0; // Variável para verificar se algum número foi encontrado
+
+    for (i = 0; i < indice->quantidadeEntradas; i++) {
+        char *correspondencia = strstr(indice->entradas[i].numeroTelefone, consulta);
+        if (correspondencia != NULL) {
+            printf("Numero encontrado: %s\n", indice->entradas[i].numeroTelefone);
+            encontrado = 1; // Define que um número foi encontrado
+        }
+    }
+
+    if (!encontrado) {
+        printf("Nenhum numero encontrado.\n");
+    }
+}
+
+void gerarUsuariosAleatorios(HashTable* hashTable, int quantidade,IndiceInvertido *indice) {
+    const char* nomes[] = {"Alicia", "Francisco", "Carlos", "Davi", "Eva", "Kalil", "Graça", "Henrique", "Ivy", "Jackson"};
+    const char* sobrenomes[] = {"Santos", "Rodrigues", "Amaral", "Jones", "Silva", "Davis", "Miller", "Wilson", "Moreira", "Holanda"};
+    const char* enderecos[] = {"Rua A", "Avenida B", "Travessa C", "Praca D", "Estrada E", "Avenida F", "Rua G", "Travessa H", "Rua I", "Avenida J"};
+
+    for (int i = 0; i < quantidade; i++) {
+        int ddd_index = rand() % num_ddds_brasileiros;  // Escolhe um índice aleatório para o DDD brasileiro
+        int ddd = ddds_brasileiros[ddd_index];         // Obtém o DDD correspondente ao índice aleatório
+
+        const char* nome = nomes[rand() % 10];
+        const char* sobrenome = sobrenomes[rand() % 10];
+        const char* endereco = enderecos[rand() % 10];
+
+        char* numero = gerarNumeroUnico(hashTable, ddd);
+
+        char nomeCompleto[60];
+        snprintf(nomeCompleto, sizeof(nomeCompleto), "%s %s", nome, sobrenome);
+
+        inserirContato(hashTable, numero, ddd, nomeCompleto, endereco);
+        adicionarIndice(indice,numero);
+
+    }
+}
+
 
 int main() {
+    clock_t start, end;
+    double cpu_time_used;
     HashTable* tabela = criarHashTable();
+    IndiceInvertido* indice=criarIndice();
+    char busca[10];
 
     int opcao;
     int ddd;
@@ -525,7 +672,8 @@ int main() {
         printf("\n4. Ver Tabela Hash");
         printf("\n5. Listar numeros de um DDD");
         printf("\n6. Listar todos os numeros por DDD");
-        printf("\n7. Sair");
+        printf("\n7. Busca Aproximada");
+        printf("\n8. Sair");
         printf("\n\nDigite a opcao desejada: ");
         scanf("%d", &opcao);
         getchar();
@@ -578,8 +726,13 @@ int main() {
                 printf("Digite o endereco: ");
                 fgets(endereco, sizeof(endereco), stdin);
                 endereco[strcspn(endereco, "\n")] = '\0';
-
+                start = clock();
                 inserirContato(tabela, numero, ddd, nome, endereco);
+                end = clock();
+                adicionarIndice(indice,numero);
+                cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+                printf("OK!\n");
+                printf("Tempo de execucao: %.6f segundos\n", cpu_time_used);
                 break;
             case 2:
                 printf("\nDigite o DDD do numero a ser pesquisado: ");
@@ -590,7 +743,9 @@ int main() {
                 fgets(numero, sizeof(numero), stdin);
                 numero[strcspn(numero, "\n")] = '\0';
 
+                start = clock();
                 AVLNode* noP = encontrarHashTable(tabela, numero, ddd);
+                end =clock();
                 if(noP != NULL){
                     printf("\n---CONTADO ENCONTRADO---\n");
                     printf("Numero: %s\n", noP->numero);
@@ -601,34 +756,45 @@ int main() {
                 else{
                     printf("Contato não encontrado!\n");
                 }
+                cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+                printf("Tempo de execucao: %.6f segundos\n", cpu_time_used);
                 break;
             case 3:
                 printf("\nDigite o DDD do numero a ser removido: ");
                 scanf("%d", &ddd);
                 getchar();
-
                 printf("\nDigite o numero de telefone a ser removido: ");
                 fgets(numero, sizeof(numero), stdin);
                 numero[strcspn(numero, "\n")] = '\0';
-
+                start = clock();
                 removerContato(tabela, numero, ddd);
+                end = clock();
                 AVLNode* noE = encontrarHashTable(tabela, numero, ddd);
                 if(noE == NULL){
+                    removerIndice(indice,numero);
                     printf("\nNumero excluido com sucesso!\n");
                 } else {
                     printf("\nNumero nao encontrado :(\n");
                 }
+                cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+                printf("Tempo de execucao: %.6f segundos\n", cpu_time_used);
                 break;
             case 4:
                 printf("---Tabela Hash---");
+                gerarUsuariosAleatorios(tabela, 50, indice);
+                start = clock();
                 imprimirTabelaHash(tabela);
+                end = clock();
+                cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+                printf("Tempo de execucao: %.6f segundos\n", cpu_time_used);
                 break;
             case 5:
                 printf("Digite o DDD: ");
                 scanf("%d", &ddd);
                 getchar();
+                start = clock();
                 AVLNode* arvore = encontrarArvoreNaTabela(tabela, ddd);
-    
+                end = clock();
                 if (arvore == NULL)
                     printf("Arvore nao encontrada para o DDD especificado.\n");
                 else {
@@ -659,6 +825,8 @@ int main() {
                         }
                     } while(opcao != 4);
                 }
+                cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+                printf("Tempo de execucao: %.6f segundos\n", cpu_time_used);
                 break;
             case 6:
                 printf("Escolha uma das opcoes de listagem\n");
@@ -673,10 +841,18 @@ int main() {
                     switch (opcao)
                     {
                     case 1:
+                        start = clock();
                         imprimirArvores(tabela, 1);
+                        end = clock();
+                        cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+                        printf("Tempo de execucao: %.6f segundos\n", cpu_time_used);
                         break;
                     case 2:
+                        start = clock();
                         imprimirArvores(tabela, 2);
+                        end = clock();
+                        cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+                        printf("Tempo de execucao: %.6f segundos\n", cpu_time_used);
                         break;
                     default:
                         printf("\nOpcao invalida. Por favor, escolha uma opcao valida.\n");
@@ -685,13 +861,19 @@ int main() {
                 } while(opcao != 3);
                 break;
             case 7:
+                printf("\nDigite o numero a ser pesquisado: ");
+                fgets(busca, sizeof(busca), stdin);
+                busca[strcspn(busca, "\n")] = '\0';
+                BuscaAproximada(indice,busca);
+                break;
+            case 8:
                 printf("\nEncerrando o programa...\n");
                 break;
             default:
                 printf("\nOpcao invalida. Por favor, escolha uma opcao valida.\n");
                 break;
         }
-    } while (opcao != 7);
+    } while (opcao != 8);
 
     return 0;
 } 
