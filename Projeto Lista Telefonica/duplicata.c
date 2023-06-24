@@ -3,16 +3,6 @@
 #include <string.h> 
 #include "duplicata.h"
 
-typedef struct Registro {
-    char nome[50];
-    char numero[20];
-    struct Registro* prox;
-} Registro;
-
-typedef struct HashDup {
-    Registro* tabela[20000];
-} HashDup;
-
 // Função hash
 int hash(char* key) {
     int hash = 0;

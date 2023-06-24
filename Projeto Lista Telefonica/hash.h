@@ -19,6 +19,7 @@ HashTable* criarHashTable();
 int calcularIndiceHash(int ddd);
 void inserirContato(HashTable* hashTable, const char* numero,int ddd,const char* nome, const char* endereco);
 void removerContato(HashTable* hashTable, const char* numero, int ddd);
+void atualizarContato(HashTable* hashTable, char* numero, int ddd, char* nome, char* endereco,char* numeroAntigo);
 AVLNode* encontrarHashTable(HashTable* hashTable, const char* numero, int ddd);
 void imprimirTabelaHash(HashTable* hashTable);
 char* gerarNumeroUnico(HashTable* hashTable,int ddd);

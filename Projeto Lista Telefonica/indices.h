@@ -10,5 +10,6 @@ typedef struct {
 IndiceInvertido* criarIndice();
 void adicionarIndice(IndiceInvertido *indice, char *numeroTelefone);
 void removerIndice(IndiceInvertido *indice, const char *numeroTelefone);
+void atualizarIndice(IndiceInvertido* indice,char* novoNumeroTelefone, char* numeroTelefoneAntigo);
 void BuscaAproximada(IndiceInvertido *indice, char *consulta) ;
 #endif

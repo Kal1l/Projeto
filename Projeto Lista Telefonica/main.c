@@ -150,7 +150,7 @@ int main() {
                 atualizarContato(tabela,numero,ddd,nome,endereco,numeroAntigo);
                 printf("CONTATO ATUALIZADO!\n");
                 break;
-            /*case 2:
+            case 3:
                 printf("\nDigite o DDD do numero a ser pesquisado: ");
                 scanf("%d", &ddd);
                 getchar();
@@ -159,19 +159,19 @@ int main() {
                 fgets(numero, sizeof(numero), stdin);
                 numero[strcspn(numero, "\n")] = '\0';
 
-                AVLNode* noP = encontrarHashTable(tabela, numero, ddd);
-                if(noP != NULL){
+                AVLNode* noS = encontrarHashTable(tabela, numero, ddd);
+                if(noS != NULL){
                     printf("\n---CONTADO ENCONTRADO---\n");
-                    printf("Numero: %s\n", noP->numero);
-                    printf("Nome: %s\n", noP->nome);
-                    printf("Endereco: %s\n", noP->endereco);
+                    printf("Numero: %s\n", noS->numero);
+                    printf("Nome: %s\n", noS->nome);
+                    printf("Endereco: %s\n", noS->endereco);
 
                 }
                 else{
                     printf("Contato nÃ£o encontrado!\n");
                 }
-                break;*/
-            case 3:
+                break;
+            case 4:
                 printf("\nDigite o DDD do numero a ser removido: ");
                 scanf("%d", &ddd);
                 getchar();
@@ -190,10 +190,10 @@ int main() {
                     printf("\nNumero nao encontrado :(\n");
                 }
                 break;
-            case 4:
+            case 5:
                 imprimirTabelaHash(tabela);
                 break;
-            case 5:
+            case 6:
                 printf("Digite o DDD: ");
                 scanf("%d", &ddd);
                 getchar();
@@ -231,7 +231,7 @@ int main() {
                     } while(opcao != 4);
                 }
                 break;
-            case 6:
+            case 7:
                 printf("Escolha uma das opcoes de listagem\n");
                 int opcao;
 
@@ -255,20 +255,20 @@ int main() {
                     }
                 } while(opcao != 3);
                 break;
-            case 7:
+            case 8:
                 printf("\nDigite o numero a ser pesquisado: ");
                 fgets(busca,sizeof(busca), stdin);
                 busca[strcspn(busca, "\n")] = '\0';
                 BuscaAproximada(indice,busca);
                 break;
-            case 8:
+            case 9:
                 printf("\nEncerrando o programa...\n");
                 break;
             default:
                 printf("\nOpcao invalida. Por favor, escolha uma opcao valida.\n");
                 break;
         }
-    } while (opcao != 8);
+    } while (opcao != 9);
 
     return 0;
 } 
