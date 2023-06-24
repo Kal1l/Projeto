@@ -243,3 +243,8 @@ void imprimirArvores(HashTable* hashTable, int ordenacao) {
         }
     }
 }
+
+void atualizarContato(HashTable* hashTable, char* numero, int ddd, char* nome, char* endereco,char* numeroAntigo) {
+    removerContato(hashTable,numeroAntigo,ddd);
+    inserirContato(hashTable,numero,ddd,nome,endereco);
+}

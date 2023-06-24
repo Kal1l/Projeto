@@ -3,16 +3,6 @@
 #include <string.h> 
 #include "duplicata.h"
 
-typedef struct Registro {
-    char nome[50];
-    char numero[20];
-    struct Registro* prox;
-} Registro;
-
-typedef struct HashDup {
-    Registro* tabela[20000];
-} HashDup;
-
 // Função hash
 int hash(char* key) {
     int hash = 0;
@@ -21,12 +11,12 @@ int hash(char* key) {
         hash += key[i];
         i++;
     }
-    return hash % 20000;
+    return hash % MAX_SIZE;
 }
 
 HashDup* criarHashDup() {
     HashDup* hashDup = (HashDup*)malloc(sizeof(HashDup));
-    for(int i=0;i<20000;i++){
+    for(int i=0;i<MAX_SIZE;i++){
         hashDup->tabela[i]=NULL;
     }
     return hashDup;
@@ -140,4 +130,12 @@ void removerHashDup(HashDup* hashDup, char* nome, char* numero) {
         anteriorNum = atualNum;
         atualNum = atualNum->prox;
     }
+}
+
+int atualizarHashDup(HashDup* hashDup, char* nomeAntigo, char* numeroAntigo, char* novoNome, char* novoNumero) {
+    removerHashDup(hashDup,nomeAntigo,numeroAntigo);
+    if(insereHashDup(hashDup,novoNome,novoNumero)==1){
+        return 1;
+    }
+    return 0;
 }

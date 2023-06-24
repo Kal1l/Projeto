@@ -48,3 +48,8 @@ void BuscaAproximada(IndiceInvertido *indice, char *consulta) {
         printf("Nenhum numero encontrado.\n");
     }
 }
+
+void atualizarIndice(IndiceInvertido* indice,char* novoNumeroTelefone, char* numeroTelefoneAntigo) {
+    removerIndice(indice,numeroTelefoneAntigo);
+    adicionarIndice(indice,novoNumeroTelefone);
+} 
