@@ -1,5 +1,6 @@
 #ifndef DUPLICATA_H
 #define DUPLICATA_H
+#define MAX_SIZE 20000
 typedef struct Registro {
     char nome[50];
     char numero[20];
@@ -7,7 +8,7 @@ typedef struct Registro {
 } Registro;
 
 typedef struct HashDup {
-    Registro* tabela[20000];
+    Registro* tabela[MAX_SIZE];
 } HashDup;
 int hash(char* key);
 HashDup* criarHashDup();

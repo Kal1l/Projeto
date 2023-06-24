@@ -11,12 +11,12 @@ int hash(char* key) {
         hash += key[i];
         i++;
     }
-    return hash % 20000;
+    return hash % MAX_SIZE;
 }
 
 HashDup* criarHashDup() {
     HashDup* hashDup = (HashDup*)malloc(sizeof(HashDup));
-    for(int i=0;i<20000;i++){
+    for(int i=0;i<MAX_SIZE;i++){
         hashDup->tabela[i]=NULL;
     }
     return hashDup;
