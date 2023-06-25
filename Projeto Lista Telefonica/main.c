@@ -291,7 +291,7 @@ int main() {
                 printf("\nEncerrando o programa...\n");
                 break;
             default:
-                // Opção inválid
+                // Opção inválida
                 printf("\nOpcao invalida. Por favor, escolha uma opcao valida.\n");
                 break;
         }
