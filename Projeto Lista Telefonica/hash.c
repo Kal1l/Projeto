@@ -36,11 +36,42 @@ HashTable* criarHashTable() {
 int calcularIndiceHash(int ddd) {
     return ddd % HASH_SIZE;
 }
+// Função de hashing pelo método da multiplicação
+int hashMult(int ddd) {
+    double A = 0.6180339887; // Constante de multiplicação (valor irracional)
+    double val = ddd * A;
+    val -= (int)val; // Extrair parte fracionária
+    int hash = (int)(HASH_SIZE * val); // Multiplicar pela tabela hash size
+    return hash;
+}
+// Função de hashing pelo método da dobra
+int hashDobra(int ddd) {
+    int hash = 0; 
+    // Converter a chave em uma sequência de dígitos
+    char dddStr[20];
+    sprintf(dddStr, "%d", ddd);
+    int len = strlen(dddStr);
+    int halfLen = len / 2;
+    // Somar os dígitos em pares (da esquerda para a direita)
+    for (int i = 0; i < halfLen; i++) {
+        int pairSum = (dddStr[i] - '0') + (dddStr[len - i - 1] - '0');
+        hash += pairSum;
+    }
+    // Se a chave possuir um número ímpar de dígitos, somar o dígito do meio
+    if (len % 2 != 0) {
+        hash += dddStr[halfLen] - '0';
+    }
+    // Aplicar o módulo para obter o valor dentro do intervalo da tabela hash
+    hash %= HASH_SIZE;
+    return hash;
+}
 
 // Função para inserir um contato na tabela hash
 // Parâmetros: a tabela hash, o número de telefone do contato, o DDD do contato, o nome do contato e o endereço do contato
 void inserirContato(HashTable* hashTable, const char* numero, int ddd, const char* nome, const char* endereco) {
     int indice = calcularIndiceHash(ddd);
+    //int indice= hashMult(ddd);
+    //int indice=hashDobra(ddd);
 
     // Verificar se o índice está vazio
     if (hashTable->tabela[indice] == NULL) {
@@ -69,6 +100,8 @@ void inserirContato(HashTable* hashTable, const char* numero, int ddd, const cha
 // Parâmetros: a tabela hash, o número de telefone do contato e o DDD do contato
 void removerContato(HashTable* hashTable, const char* numero, int ddd) {
     int indice = calcularIndiceHash(ddd);
+    //int indice= hashMult(ddd);
+    //int indice=hashDobra(ddd);
 
     // Verificar se o índice está vazio
     if (hashTable->tabela[indice] == NULL)
@@ -130,11 +163,37 @@ void gerarUsuariosAleatorios(HashTable* hashTable, int quantidade, IndiceInverti
     }
 }
 
+// Busca sequencial
+AVLNode* buscaSequencial(HashTable* hashTable, int ddd,char* numero) {
+    int indice = calcularIndiceHash(ddd);
+    //int indice= hashMult(ddd);
+    //int indice=hashDobra(ddd);
+
+    // Verificar se o índice está vazio
+    if (hashTable->tabela[indice] == NULL)
+        return NULL;
+    else {
+        HashNode* atual = hashTable->tabela[indice];
+
+        // Percorrer a lista encadeada até encontrar um nó com o mesmo DDD
+        while (atual != NULL) {
+            if (atual->ddd == ddd) {
+                AVLNode* result = encontrarNodo(atual->raiz,numero);
+                return result;
+            }
+            atual = atual->proximo;
+        }
+    }
+
+    return NULL;
+}
 // Função para encontrar um nó na tabela hash
 // Parâmetros: a tabela hash, o número de telefone do contato e o DDD do contato
 // Retorna: o nó da árvore AVL correspondente ao número de telefone e DDD fornecidos
 AVLNode* encontrarHashTable(HashTable* hashTable, const char* numero, int ddd) {
     int indice = calcularIndiceHash(ddd);
+    //int indice= hashMult(ddd);
+    //int indice=hashDobra(ddd);
 
     // Verificar se o índice está vazio
     if (hashTable->tabela[indice] == NULL)
@@ -207,6 +266,8 @@ char* gerarNumeroUnico(HashTable* hashTable, int ddd) {
 // Retorna: a raiz da árvore AVL correspondente ao DDD fornecido
 AVLNode* encontrarArvoreNaTabela(HashTable* hashTable, int ddd) {
     int indice = calcularIndiceHash(ddd);
+    //int indice= hashMult(ddd);
+    //int indice=hashDobra(ddd);
 
     // Verificar se o índice está vazio
     if (hashTable->tabela[indice] == NULL)
