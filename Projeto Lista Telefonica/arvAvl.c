@@ -89,23 +89,19 @@ AVLNode* inserir(AVLNode* node, const char* numero, const char* nome, const char
 
     return node;
 }
+//Busca binária
 AVLNode* encontrarNodo(AVLNode* node, const char* numero) {
     if (node == NULL || strcmp(node->numero, numero) == 0)
         return node;
 
     int cmp = strcmp(numero, node->numero);
 
-    if (cmp < 0)
+    if (cmp < node->numero)
         return encontrarNodo(node->esquerda, numero);
     else
         return encontrarNodo(node->direita, numero);
 }
-AVLNode* encontrarMenorNodo(AVLNode* node) {
-    AVLNode* atual = node;
-    while (atual->esquerda != NULL)
-        atual = atual->esquerda;
-    return atual;
-}
+
 AVLNode* removerNodo(AVLNode* node, const char* numero) {
     if (node == NULL)
         return node;
