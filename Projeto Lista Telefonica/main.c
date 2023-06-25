@@ -1,11 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "hash.c"
 #include "arvAvl.c"
 #include "indices.c"
 #include "duplicata.c"
 
+void calcularTempoExecucao(clock_t inicio, clock_t fim) {
+    double tempoTotal = (double)(fim - inicio) / CLOCKS_PER_SEC;
+    printf("Tempo de execucao: %.2f segundos\n", tempoTotal);
+}
 int main() {
     HashTable* tabela = criarHashTable();
     IndiceInvertido* indice=criarIndice();
@@ -86,17 +91,20 @@ int main() {
                     flag=1;
                 }
                 }
+                clock_t inicio = clock();
                 inserirContato(tabela, numero, ddd, nome, endereco);
                 adicionarIndice(indice,numero);
-                printf("OK!\n");
+                clock_t fim=clock();
+                calcularTempoExecucao(inicio, fim);
                 break;
             case 2:
                 printf("Digite o DDD: ");
                 scanf("%d", &ddd);
                 getchar();
-                printf("Digite o nÃºmero do contato que deseja atualizar: ");
+                printf("Digite o numero do contato que deseja atualizar: ");
                 fgets(numeroAntigo, sizeof(numeroAntigo), stdin);
                 numeroAntigo[strcspn(numeroAntigo, "\n")] = '\0';
+
                 AVLNode* noP = encontrarHashTable(tabela, numeroAntigo, ddd);
                 
                 while(flag==0){
@@ -147,10 +155,12 @@ int main() {
                     flag=1;
                 }
                 }
-                
+                clock_t inicio=clock();
                 atualizarIndice(indice,numero,noP->numero);
                 atualizarContato(tabela,numero,ddd,nome,endereco,numeroAntigo);
+                clock_t fim=clock();
                 printf("CONTATO ATUALIZADO!\n");
+                calcularTempoExecucao(inicio,fim);
                 break;
             case 3:
                 printf("\nDigite o DDD do numero a ser pesquisado: ");
@@ -160,8 +170,11 @@ int main() {
                 printf("\nDigite o numero de telefone a ser pesquisado: ");
                 fgets(numero, sizeof(numero), stdin);
                 numero[strcspn(numero, "\n")] = '\0';
-
+                
+                clock_t inicio=clock();
                 AVLNode* noS = encontrarHashTable(tabela, numero, ddd);
+                clock_t fim=clock();
+                calcularTempoExecucao(inicio,fim);
                 if(noS != NULL){
                     printf("\n---CONTADO ENCONTRADO---\n");
                     printf("Numero: %s\n", noS->numero);
@@ -172,6 +185,7 @@ int main() {
                 else{
                     printf("Contato nao encontrado!\n");
                 }
+
                 break;
             case 4:
                 printf("\nDigite o DDD do numero a ser removido: ");
@@ -184,22 +198,31 @@ int main() {
 
                 AVLNode* noE = encontrarHashTable(tabela, numero, ddd);
                 if (noE != NULL) {
+                    clock_t inicio=clock();
                     removerContato(tabela, numero, ddd);
                     removerIndice(indice, numero);
                     removerHashDup(duplicata, noS->nome, numero);
+                    clock_t fim=clock();
+                    calcularTempoExecucao(inicio,fim);
                     printf("\nNumero excluido com sucesso!\n");
                 } else {
                     printf("\nNumero nao encontrado :(\n");
                 }
                 break;
             case 5:
+                clock_t inicio=clock();
                 imprimirTabelaHash(tabela);
+                clock_t fim=clock();
+                calcularTempoExecucao(inicio,fim);
                 break;
             case 6:
                 printf("Digite o DDD: ");
                 scanf("%d", &ddd);
                 getchar();
+                clock_t inicio=clock();
                 AVLNode* arvore = encontrarArvoreNaTabela(tabela, ddd);
+                clock_t fim=clock();
+                calcularTempoExecucao(inicio,fim);
     
                 if (arvore == NULL)
                     printf("Arvore nao encontrada para o DDD especificado.\n");
@@ -218,13 +241,22 @@ int main() {
                         switch (opcao)
                         {
                             case 1:
+                            clock_t inicio=clock();
                             imprimirPreOrdem(arvore);
+                            clock_t fim=clock();
+                            calcularTempoExecucao(inicio,fim);
                             break;
                             case 2:
+                            clock_t inicio=clock();
                             imprimirEmOrdem(arvore);
+                            clock_t fim=clock();
+                            calcularTempoExecucao(inicio,fim);
                             break;
                             case 3:
+                            clock_t inicio=clock();
                             imprimirPosOrdem(arvore);
+                            clock_t fim=clock();
+                            calcularTempoExecucao(inicio,fim);
                             break;
                             default:
                             printf("\nOpcao invalida. Por favor, escolha uma opcao valida.\n");
@@ -246,10 +278,16 @@ int main() {
                     switch (opcao)
                     {
                     case 1:
+                        clock_t inicio=clock();
                         imprimirArvores(tabela, 1);
+                        clock_t fim=clock();
+                        calcularTempoExecucao(inicio,fim);
                         break;
                     case 2:
+                        clock_t inicio=clock();
                         imprimirArvores(tabela, 2);
+                        clock_t fim=clock();
+                        calcularTempoExecucao(inicio,fim);
                         break;
                     default:
                         printf("\nOpcao invalida. Por favor, escolha uma opcao valida.\n");
@@ -261,7 +299,10 @@ int main() {
                 printf("\nDigite o numero a ser pesquisado: ");
                 fgets(busca,sizeof(busca), stdin);
                 busca[strcspn(busca, "\n")] = '\0';
+                clock_t inicio=clock();
                 BuscaAproximada(indice,busca);
+                clock_t fim=clock();
+                calcularTempoExecucao(inicio,fim);
                 break;
             case 9:
                 gerarUsuariosAleatorios(tabela,100, indice);
