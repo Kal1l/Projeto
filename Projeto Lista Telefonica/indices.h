@@ -1,5 +1,6 @@
 #ifndef INDICES_H
 #define INDICES_H
+#define MAX_SIZE 10000
 
 // Definição da estrutura para armazenar o número de telefone
 typedef struct {
@@ -8,7 +9,7 @@ typedef struct {
 
 // Definição da estrutura do indice invertido
 typedef struct {
-    EntradaTelefone entradas[10000];  // Array de entradas telefônicas
+    EntradaTelefone entradas[MAX_SIZE];  // Array de entradas telefônicas
     int quantidadeEntradas;  // Contador para controlar a quantidade de entradas
 } IndiceInvertido;
 

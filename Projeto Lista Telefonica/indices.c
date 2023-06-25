@@ -15,7 +15,7 @@ IndiceInvertido* criarIndice(){
 // Função para adicionar uma entrada ao índice invertido
 // Parâmetros: a estrutura de índice invertido e o número de telefone a ser adicionado
 void adicionarIndice(IndiceInvertido *indice, char *numeroTelefone) {
-    if (indice->quantidadeEntradas < 10000) {
+    if (indice->quantidadeEntradas < MAX_SIZE) {
         // Copia o número de telefone para a próxima posição disponível do array
         strcpy(indice->entradas[indice->quantidadeEntradas].numeroTelefone, numeroTelefone);
         indice->quantidadeEntradas++;  // Incrementa o contador de entradas

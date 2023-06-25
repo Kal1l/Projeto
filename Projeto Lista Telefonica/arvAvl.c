@@ -4,25 +4,25 @@
 #include "arvAvl.h"
 
 // Cria um novo nó com as informações do contato passadas como parâmetros
-AVLNode* criarNode(const char* numero, const char* nome, const char* endereco) {
+AVLNo* criarNo(const char* numero, const char* nome, const char* endereco) {
     // Aloca memória para o novo nó
-    AVLNode* node = (AVLNode*)malloc(sizeof(AVLNode));
+    AVLNo* no = (AVLNo*)malloc(sizeof(AVLNo));
     // Copia as informações do contato para o nó
-    strcpy(node->numero, numero);
-    strcpy(node->nome, nome);
-    strcpy(node->endereco, endereco);
+    strcpy(no->numero, numero);
+    strcpy(no->nome, nome);
+    strcpy(no->endereco, endereco);
     // Inicializa os demais campos do nó
-    node->altura = 1;
-    node->esquerda = NULL;
-    node->direita = NULL;
-    return node;
+    no->altura = 1;
+    no->esquerda = NULL;
+    no->direita = NULL;
+    return no;
 }
 
 // Retorna a altura de um nó
-int altura(AVLNode* node) {
-    if (node == NULL)
+int altura(AVLNo* no) {
+    if (no == NULL)
         return 0;
-    return node->altura;
+    return no->altura;
 }
 
 // Retorna o máximo entre dois números
@@ -31,16 +31,16 @@ int max(int a, int b) {
 }
 
 // Calcula o fator de balanceamento de um nó
-int fatorBalanceamento(AVLNode* node) {
-    if (node == NULL)
+int fatorBalanceamento(AVLNo* no) {
+    if (no == NULL)
         return 0;
-    return altura(node->esquerda) - altura(node->direita);
+    return altura(no->esquerda) - altura(no->direita);
 }
 
 // Realiza uma rotação para a direita no nó 'y' e retorna o novo nó que será a raiz da subárvore
-AVLNode* rotacaoDireita(AVLNode* y) {
-    AVLNode* x = y->esquerda;
-    AVLNode* T2 = x->direita;
+AVLNo* rotacaoDireita(AVLNo* y) {
+    AVLNo* x = y->esquerda;
+    AVLNo* T2 = x->direita;
 
     // Realiza a rotação
     x->direita = y;
@@ -55,9 +55,9 @@ AVLNode* rotacaoDireita(AVLNode* y) {
 }
 
 // Realiza uma rotação para a esquerda no nó 'x' e retorna o novo nó que será a raiz da subárvore
-AVLNode* rotacaoEsquerda(AVLNode* x) {
-    AVLNode* y = x->direita;
-    AVLNode* T2 = y->esquerda;
+AVLNo* rotacaoEsquerda(AVLNo* x) {
+    AVLNo* y = x->direita;
+    AVLNo* T2 = y->esquerda;
 
     // Realiza a rotação
     y->esquerda = x;
@@ -72,210 +72,210 @@ AVLNode* rotacaoEsquerda(AVLNode* x) {
 }
 
 // Insere um novo contato na árvore AVL e retorna a raiz atualizada
-AVLNode* inserir(AVLNode* node, const char* numero, const char* nome, const char* endereco) {
-    if (node == NULL)
-        return criarNode(numero, nome, endereco);
+AVLNo* inserir(AVLNo* no, const char* numero, const char* nome, const char* endereco) {
+    if (no == NULL)
+        return criarNo(numero, nome, endereco);
 
     // Compara o número do contato com o número do nó atual
-    int cmp = strcmp(numero, node->numero);
+    int cmp = strcmp(numero, no->numero);
 
     if (cmp < 0)
-        node->esquerda = inserir(node->esquerda, numero, nome, endereco);
+        no->esquerda = inserir(no->esquerda, numero, nome, endereco);
     else if (cmp > 0)
-        node->direita = inserir(node->direita, numero, nome, endereco);
+        no->direita = inserir(no->direita, numero, nome, endereco);
     else {
         // O número já existe na árvore, atualiza o nome e o endereço
-        strcpy(node->nome, nome);
-        strcpy(node->endereco, endereco);
-        return node;
+        strcpy(no->nome, nome);
+        strcpy(no->endereco, endereco);
+        return no;
     }
 
     // Atualiza a altura do nó atual
-    node->altura = 1 + max(altura(node->esquerda), altura(node->direita));
+    no->altura = 1 + max(altura(no->esquerda), altura(no->direita));
 
     // Calcula o fator de balanceamento do nó atual
-    int balanceamento = fatorBalanceamento(node);
+    int balanceamento = fatorBalanceamento(no);
 
     // Realiza as rotações necessárias para manter a propriedade de AVL
-    if (balanceamento > 1 && strcmp(numero, node->esquerda->numero) < 0)
-        return rotacaoDireita(node);
+    if (balanceamento > 1 && strcmp(numero, no->esquerda->numero) < 0)
+        return rotacaoDireita(no);
 
-    if (balanceamento < -1 && strcmp(numero, node->direita->numero) > 0)
-        return rotacaoEsquerda(node);
+    if (balanceamento < -1 && strcmp(numero, no->direita->numero) > 0)
+        return rotacaoEsquerda(no);
 
-    if (balanceamento > 1 && strcmp(numero, node->esquerda->numero) > 0) {
-        node->esquerda = rotacaoEsquerda(node->esquerda);
-        return rotacaoDireita(node);
+    if (balanceamento > 1 && strcmp(numero, no->esquerda->numero) > 0) {
+        no->esquerda = rotacaoEsquerda(no->esquerda);
+        return rotacaoDireita(no);
     }
 
-    if (balanceamento < -1 && strcmp(numero, node->direita->numero) < 0) {
-        node->direita = rotacaoDireita(node->direita);
-        return rotacaoEsquerda(node);
+    if (balanceamento < -1 && strcmp(numero, no->direita->numero) < 0) {
+        no->direita = rotacaoDireita(no->direita);
+        return rotacaoEsquerda(no);
     }
 
     // Retorna a raiz atualizada
-    return node;
+    return no;
 }
 
 // Busca um nó na árvore AVL pelo número do contato e retorna o nó encontrado ou NULL se não encontrado(Busca Binária)
-AVLNode* encontrarNodo(AVLNode* node, const char* numero) {
-    if (node == NULL || strcmp(node->numero, numero) == 0)
-        return node;
+AVLNo* encontrarNo(AVLNo* no, const char* numero) {
+    if (no == NULL || strcmp(no->numero, numero) == 0)
+        return no;
 
     // Compara o número do contato com o número do nó atual
-    int cmp = strcmp(numero, node->numero);
+    int cmp = strcmp(numero, no->numero);
 
     if (cmp < 0)
-        return encontrarNodo(node->esquerda, numero);
+        return encontrarNo(no->esquerda, numero);
     else
-        return encontrarNodo(node->direita, numero);
+        return encontrarNo(no->direita, numero);
 }
 
 // Encontra o nó com o menor número na árvore AVL e retorna o nó encontrado
-AVLNode* encontrarMenorNodo(AVLNode* node) {
-    AVLNode* atual = node;
+AVLNo* encontrarMenorNo(AVLNo* no) {
+    AVLNo* atual = no;
     while (atual->esquerda != NULL)
         atual = atual->esquerda;
     return atual;
 }
 
 // Remove um nó da árvore AVL pelo número do contato e retorna a raiz atualizada
-AVLNode* removerNodo(AVLNode* node, const char* numero) {
-    if (node == NULL)
-        return node;
+AVLNo* removerNo(AVLNo* no, const char* numero) {
+    if (no == NULL)
+        return no;
 
     // Compara o número do contato com o número do nó atual
-    int cmp = strcmp(numero, node->numero);
+    int cmp = strcmp(numero, no->numero);
 
     if (cmp < 0)
-        node->esquerda = removerNodo(node->esquerda, numero);
+        no->esquerda = removerNo(no->esquerda, numero);
     else if (cmp > 0)
-        node->direita = removerNodo(node->direita, numero);
+        no->direita = removerNo(no->direita, numero);
     else {
-        if (node->esquerda == NULL || node->direita == NULL) {
+        if (no->esquerda == NULL || no->direita == NULL) {
             // O nó possui no máximo um filho, realiza a remoção
-            AVLNode* temp = node->esquerda ? node->esquerda : node->direita;
+            AVLNo* temp = no->esquerda ? no->esquerda : no->direita;
 
             if (temp == NULL) {
                 // O nó é uma folha, libera a memória e retorna NULL
-                free(node);
+                free(no);
                 return NULL;
             } else {
                 // O nó possui um filho, copia os valores do filho para o nó atual e realiza a remoção do filho
-                strcpy(node->numero, temp->numero);
-                strcpy(node->nome, temp->nome);
-                strcpy(node->endereco, temp->endereco);
-                node->esquerda = node->direita = NULL;
+                strcpy(no->numero, temp->numero);
+                strcpy(no->nome, temp->nome);
+                strcpy(no->endereco, temp->endereco);
+                no->esquerda = no->direita = NULL;
                 free(temp);
             }
         } else {
             // O nó possui dois filhos, encontra o nó com o menor número na subárvore direita
-            AVLNode* temp = encontrarMenorNodo(node->direita);
+            AVLNo* temp = encontrarMenorNo(no->direita);
 
             // Copia os valores do nó encontrado para o nó atual
-            strcpy(node->numero, temp->numero);
-            strcpy(node->nome, temp->nome);
-            strcpy(node->endereco, temp->endereco);
+            strcpy(no->numero, temp->numero);
+            strcpy(no->nome, temp->nome);
+            strcpy(no->endereco, temp->endereco);
 
             // Remove o nó encontrado da subárvore direita
-            node->direita = removerNodo(node->direita, temp->numero);
+            no->direita = removerNo(no->direita, temp->numero);
         }
     }
 
-    if (node == NULL)
-        return node;
+    if (no == NULL)
+        return no;
 
     // Atualiza a altura do nó atual
-    node->altura = 1 + max(altura(node->esquerda), altura(node->direita));
+    no->altura = 1 + max(altura(no->esquerda), altura(no->direita));
     
     // Calcula o fator de balanceamento do nó atual
-    int balanceamento = fatorBalanceamento(node);
+    int balanceamento = fatorBalanceamento(no);
 
     // Realiza as rotações necessárias para manter a propriedade de AVL
-    if (balanceamento > 1 && fatorBalanceamento(node->esquerda) >= 0)
-        return rotacaoDireita(node);
+    if (balanceamento > 1 && fatorBalanceamento(no->esquerda) >= 0)
+        return rotacaoDireita(no);
 
-    if (balanceamento > 1 && fatorBalanceamento(node->esquerda) < 0) {
-        node->esquerda = rotacaoEsquerda(node->esquerda);
-        return rotacaoDireita(node);
+    if (balanceamento > 1 && fatorBalanceamento(no->esquerda) < 0) {
+        no->esquerda = rotacaoEsquerda(no->esquerda);
+        return rotacaoDireita(no);
     }
 
-    if (balanceamento < -1 && fatorBalanceamento(node->direita) <= 0)
-        return rotacaoEsquerda(node);
+    if (balanceamento < -1 && fatorBalanceamento(no->direita) <= 0)
+        return rotacaoEsquerda(no);
 
-    if (balanceamento < -1 && fatorBalanceamento(node->direita) > 0) {
-        node->direita = rotacaoDireita(node->direita);
-        return rotacaoEsquerda(node);
+    if (balanceamento < -1 && fatorBalanceamento(no->direita) > 0) {
+        no->direita = rotacaoDireita(no->direita);
+        return rotacaoEsquerda(no);
     }
 
     // Retorna a raiz atualizada
-    return node;
+    return no;
 }
 
 // Imprime os contatos em pré-ordem (raiz, esquerda, direita)
-void imprimirPreOrdem(AVLNode* node) {
-    if (node == NULL)
+void imprimirPreOrdem(AVLNo* no) {
+    if (no == NULL)
         return;
 
-    printf("Numero: %s\n", node->numero);
-    printf("Nome: %s\n", node->nome);
-    printf("Endereco: %s\n", node->endereco);
+    printf("Numero: %s\n", no->numero);
+    printf("Nome: %s\n", no->nome);
+    printf("Endereco: %s\n", no->endereco);
     printf("\n");
 
-    imprimirPreOrdem(node->esquerda);
-    imprimirPreOrdem(node->direita);
+    imprimirPreOrdem(no->esquerda);
+    imprimirPreOrdem(no->direita);
 }
 
 // Imprime os contatos em ordem crescente (esquerda, raiz, direita)
-void imprimirEmOrdem(AVLNode* node) {
-    if (node == NULL)
+void imprimirEmOrdem(AVLNo* no) {
+    if (no == NULL)
         return;
 
-    imprimirEmOrdem(node->esquerda);
+    imprimirEmOrdem(no->esquerda);
 
-    printf("Numero: %s\n", node->numero);
-    printf("Nome: %s\n", node->nome);
-    printf("Endereco: %s\n", node->endereco);
+    printf("Numero: %s\n", no->numero);
+    printf("Nome: %s\n", no->nome);
+    printf("Endereco: %s\n", no->endereco);
     printf("\n");
 
-    imprimirEmOrdem(node->direita);
+    imprimirEmOrdem(no->direita);
 }
 
 // Imprime os contatos em pós-ordem (esquerda, direita, raiz)
-void imprimirPosOrdem(AVLNode* node) {
-    if (node == NULL)
+void imprimirPosOrdem(AVLNo* no) {
+    if (no == NULL)
         return;
 
-    imprimirPosOrdem(node->esquerda);
-    imprimirPosOrdem(node->direita);
+    imprimirPosOrdem(no->esquerda);
+    imprimirPosOrdem(no->direita);
 
-    printf("Numero: %s\n", node->numero);
-    printf("Nome: %s\n", node->nome);
-    printf("Endereco: %s\n", node->endereco);
+    printf("Numero: %s\n", no->numero);
+    printf("Nome: %s\n", no->nome);
+    printf("Endereco: %s\n", no->endereco);
     printf("\n");
 }
 
 // Percorre a árvore em ordem e retorna a contagem total de nós
-int contarNos(AVLNode* node) {
-    if (node == NULL)
+int contarNos(AVLNo* no) {
+    if (no == NULL)
         return 0;
 
     // Retorna a contagem total de nós na subárvore
-    return 1 + contarNos(node->esquerda) + contarNos(node->direita);
+    return 1 + contarNos(no->esquerda) + contarNos(no->direita);
 }
 
 // Percorre a árvore em ordem e registra os nomes dos contatos
-void registrarNomes(AVLNode* node, char** nomes, int* indice) {
-    if (node == NULL)
+void registrarNomes(AVLNo* no, char** nomes, int* indice) {
+    if (no == NULL)
         return;
 
     // Percorre a árvore em ordem e registra os nomes dos contatos
-    registrarNomes(node->esquerda, nomes, indice);
+    registrarNomes(no->esquerda, nomes, indice);
 
-    strcpy(nomes[*indice], node->nome);
+    strcpy(nomes[*indice], no->nome);
     (*indice)++;
 
-    registrarNomes(node->direita, nomes, indice);
+    registrarNomes(no->direita, nomes, indice);
 }
 
 // Ordena os nomes em ordem alfabética 
@@ -293,27 +293,27 @@ void ordenarNomes(char** nomes, int tamanho) {
 }
 
 // Imprime as informações de um contato com base no nome
-void imprimirContatoPorNome(AVLNode* node, const char* nome) {
-    if (node == NULL)
+void imprimirContatoPorNome(AVLNo* no, const char* nome) {
+    if (no == NULL)
         return;
 
-    imprimirContatoPorNome(node->esquerda, nome);
+    imprimirContatoPorNome(no->esquerda, nome);
 
-    int comparacao = strcmp(node->nome, nome);
+    int comparacao = strcmp(no->nome, nome);
     if (comparacao == 0) {
-        printf("Numero: %s\n", node->numero);
-        printf("Nome: %s\n", node->nome);
-        printf("Endereco: %s\n", node->endereco);
+        printf("Numero: %s\n", no->numero);
+        printf("Nome: %s\n", no->nome);
+        printf("Endereco: %s\n", no->endereco);
         printf("\n");
         
     }
 
-    imprimirContatoPorNome(node->direita, nome);
+    imprimirContatoPorNome(no->direita, nome);
 }
 
 // Imprime os contatos em ordem alfabética por nome
-void imprimirPorNomeOrdenado(AVLNode* node) {
-    int tamanho = contarNos(node);
+void imprimirPorNomeOrdenado(AVLNo* no) {
+    int tamanho = contarNos(no);
 
     char** nomes = (char**)malloc(tamanho * sizeof(char*));
     for (int i = 0; i < tamanho; i++) {
@@ -322,12 +322,12 @@ void imprimirPorNomeOrdenado(AVLNode* node) {
 
     int indice = 0;
 
-    registrarNomes(node, nomes, &indice);
+    registrarNomes(no, nomes, &indice);
 
     ordenarNomes(nomes, tamanho);
 
     for (int i = 0; i < tamanho; i++) {
-        imprimirContatoPorNome(node, nomes[i]);
+        imprimirContatoPorNome(no, nomes[i]);
     }
 
     for (int i = 0; i < tamanho; i++) {

@@ -4,20 +4,20 @@
 #include "duplicata.h"
 
 // Função hash
-int hash(char* key) {
+int hash(char* chave) {
     int hash = 0;
     int i = 0;
-    while (key[i] != '\0') {
-        hash += key[i];
+    while (chave[i] != '\0') {
+        hash += chave[i];
         i++;
     }
-    return hash % MAX_SIZE;
+    return hash % MAX_SIZE2;
 }
 
 // Função para criar uma tabela hash com tratamento de duplicatas
 HashDup* criarHashDup() {
     HashDup* hashDup = (HashDup*)malloc(sizeof(HashDup));
-    for(int i=0;i<MAX_SIZE;i++){
+    for(int i=0;i<MAX_SIZE2;i++){
         hashDup->tabela[i]=NULL;
     }
     return hashDup;

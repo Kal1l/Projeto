@@ -5,17 +5,17 @@
 #include "arvAvl.h"
 
 // Definição da estrutura da posição na tabela hash, que guarda uma árvore AVL, com endereçamento separado
-typedef struct HashNode {
+typedef struct HashNo {
     int ddd;
-    AVLNode* raiz;
-    struct HashNode* proximo;
-} HashNode;
+    AVLNo* raiz;
+    struct HashNo* proximo;
+} HashNo;
 
 // Definição da estrutura da tabela hash principal
-typedef struct HashTable {
+typedef struct TabelaHash {
     int tamanho;
-    HashNode** tabela;
-} HashTable;
+    HashNo** tabela;
+} TabelaHash;
 
 // Pré-set de todos os DDD brasileiros, para teste
 const int ddds_brasileiros[] = {
@@ -33,9 +33,9 @@ const int num_ddds_brasileiros = sizeof(ddds_brasileiros) / sizeof(ddds_brasilei
 // Função para gerar usuários aleatórios na tabela hash
 int gerarDDD();
 // Função para criar um novo nó da tabela hash
-HashNode* criarHashNode(int ddd,AVLNode* raiz);
+HashNo* criarHashNo(int ddd,AVLNo* raiz);
 // Função para criar uma tabela hash vazia
-HashTable* criarHashTable();
+TabelaHash* criarTabelaHash();
 //Função para calcular o índice da tabela hash para um determinado DDD
 int calcularIndiceHash(int ddd);
 // Função de hashing pelo método da multiplicação
@@ -43,24 +43,24 @@ int hashMult(int ddd);
 // Função de hashing pelo método da dobra
 int hashDobra(int ddd);
 // Função para inserir um contato na tabela hash
-void inserirContato(HashTable* hashTable, const char* numero,int ddd,const char* nome, const char* endereco);
+void inserirContato(TabelaHash* tabelaHash, const char* numero,int ddd,const char* nome, const char* endereco);
 // Função para remover um contato da tabela hash
-void removerContato(HashTable* hashTable, const char* numero, int ddd);
+void removerContato(TabelaHash* tabelaHash, const char* numero, int ddd);
 // Função para gerar usuários aleatórios na tabela hash
-void gerarUsuariosAleatorios(HashTable* hashTable, int quantidade,IndiceInvertido* indice);
+void gerarUsuariosAleatorios(TabelaHash* tabelaHash, int quantidade,IndiceInvertido* indice);
 // Busca sequencial
-AVLNode* buscaSequencial(HashTable* hashTable, int ddd,char* numero);
+AVLNo* buscaSequencial(TabelaHash* tabelaHash, int ddd,char* numero);
 // Função para encontrar um nó na tabela hash
-AVLNode* encontrarHashTable(HashTable* hashTable, const char* numero, int ddd);
+AVLNo* encontrarContato(TabelaHash* tabelaHash, const char* numero, int ddd);
 // Função para imprimir a tabela hash
-void imprimirTabelaHash(HashTable* hashTable);
+void imprimirTabelaHash(TabelaHash* tabelaHash);
 // Função para gerar um número único
-char* gerarNumeroUnico(HashTable* hashTable,int ddd);
+char* gerarNumeroUnico(TabelaHash* tabelaHash,int ddd);
 // Função para encontrar uma árvore na tabela hash
-AVLNode* encontrarArvoreNaTabela(HashTable* hashTable, int ddd);
+AVLNo* encontrarArvoreNaTabela(TabelaHash* tabelaHash, int ddd);
 // Função para imprimir as árvores da tabela hash
-void imprimirArvores(HashTable* hashTable, int ordenacao);
+void imprimirArvores(TabelaHash* tabelaHash, int ordenacao);
 // Função para atualizar os contatos na tabela e árvores 
-void atualizarContato(HashTable* hashTable, char* numero, int ddd, char* nome, char* endereco,char* numeroAntigo);
+void atualizarContato(TabelaHash* tabelaHash, char* numero, int ddd, char* nome, char* endereco,char* numeroAntigo);
 
 #endif

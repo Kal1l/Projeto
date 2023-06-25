@@ -8,7 +8,7 @@
 
 int main() {
     // Criação das estruturas principais
-    HashTable* tabela = criarHashTable();
+    TabelaHash* tabela = criarTabelaHash();
     IndiceInvertido* indice=criarIndice();
     HashDup* duplicata = criarHashDup();
 
@@ -106,7 +106,7 @@ int main() {
                 printf("Digite o numero do contato que deseja atualizar: ");
                 fgets(numeroAntigo, sizeof(numeroAntigo), stdin);
                 numeroAntigo[strcspn(numeroAntigo, "\n")] = '\0';
-                AVLNode* noP = encontrarHashTable(tabela, numeroAntigo, ddd);
+                AVLNo* noP = encontrarContato(tabela, numeroAntigo, ddd);
                 
                 while(flag==0){
                 // Geração de números únicos
@@ -173,7 +173,7 @@ int main() {
                 numero[strcspn(numero, "\n")] = '\0';
 
                 // Procura o contato na tabela hash com base no número e DDD fornecidos
-                AVLNode* noS = encontrarHashTable(tabela, numero, ddd);
+                AVLNo* noS = encontrarContato(tabela, numero, ddd);
                 if(noS != NULL){
                     printf("\n---CONTADO ENCONTRADO---\n");
                     printf("Numero: %s\n", noS->numero);
@@ -195,7 +195,7 @@ int main() {
                 fgets(numero, sizeof(numero), stdin);
                 numero[strcspn(numero, "\n")] = '\0';
 
-                AVLNode* noE = encontrarHashTable(tabela, numero, ddd);
+                AVLNo* noE = encontrarContato(tabela, numero, ddd);
                 if (noE != NULL) {
                     // Remove o contato da tabela hash, do índice invertido e da tabela de duplicatas
                     removerContato(tabela, numero, ddd);
@@ -215,7 +215,7 @@ int main() {
                 printf("Digite o DDD: ");
                 scanf("%d", &ddd);
                 getchar();
-                AVLNode* arvore = encontrarArvoreNaTabela(tabela, ddd);
+                AVLNo* arvore = encontrarArvoreNaTabela(tabela, ddd);
     
                 if (arvore == NULL)
                     printf("Arvore nao encontrada para o DDD especificado.\n");

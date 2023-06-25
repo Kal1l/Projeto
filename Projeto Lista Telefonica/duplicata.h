@@ -1,7 +1,6 @@
 #ifndef DUPLICATA_H
 #define DUPLICATA_H
-
-#define MAX_SIZE 20000
+#define MAX_SIZE2 20000
 
 // Definição da estrutura de um nó da árvore Duplicata
 typedef struct Registro {
@@ -12,11 +11,11 @@ typedef struct Registro {
 
 // Definição da estrutura da tabela Hash Duplicata
 typedef struct HashDup {
-    Registro* tabela[MAX_SIZE];
+    Registro* tabela[MAX_SIZE2];
 } HashDup;
 
 // Função de hashing para tabela duplicata
-int hash(char* key);
+int hash(char* chave);
 // Inicializa uma nova tabela duplicata
 HashDup* criarHashDup();
 // insere um novo elemento direto na tabela
