@@ -26,19 +26,22 @@ const int ddds_brasileiros[] = {
 };
 
 const int num_ddds_brasileiros = sizeof(ddds_brasileiros) / sizeof(ddds_brasileiros[0]);
-
 int gerarDDD();
 HashNode* criarHashNode(int ddd,AVLNode* raiz);
 HashTable* criarHashTable();
 int calcularIndiceHash(int ddd);
+int hashMult(int ddd);
+int hashDobra(int ddd);
 void inserirContato(HashTable* hashTable, const char* numero,int ddd,const char* nome, const char* endereco);
 void removerContato(HashTable* hashTable, const char* numero, int ddd);
 void gerarUsuariosAleatorios(HashTable* hashTable, int quantidade,IndiceInvertido* indice);
+AVLNode* buscaSequencial(HashTable* hashTable, int ddd,char* numero);
 AVLNode* encontrarHashTable(HashTable* hashTable, const char* numero, int ddd);
 void imprimirTabelaHash(HashTable* hashTable);
 char* gerarNumeroUnico(HashTable* hashTable,int ddd);
 AVLNode* encontrarArvoreNaTabela(HashTable* hashTable, int ddd);
 void imprimirArvores(HashTable* hashTable, int ordenacao);
 void atualizarContato(HashTable* hashTable, char* numero, int ddd, char* nome, char* endereco,char* numeroAntigo);
+
 
 #endif
