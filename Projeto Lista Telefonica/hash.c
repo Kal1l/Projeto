@@ -288,8 +288,8 @@ AVLNo* encontrarArvoreNaTabela(TabelaHash* tabelaHash, int ddd) {
 }
 
 // Função para imprimir as árvores da tabela hash
-// Parâmetros: a tabela hash e a ordem de impressão das árvores (0 para em ordem, 1 para pré-ordem, 2 para pós-ordem)
-void imprimirArvores(TabelaHash* tabelaHash, int ordenacao) {
+// Parâmetros: a tabela hash e a ordem de impressão das árvores (1 para ordenar por número, 2 para ordenar por nome)
+void imprimirArvores(HashTable* hashTable, int ordenacao) {
     printf("Lista de arvores:\n");
 
     // Vetor para armazenar os DDDs presentes na tabela hash
@@ -298,8 +298,8 @@ void imprimirArvores(TabelaHash* tabelaHash, int ordenacao) {
 
     // Percorrer a tabela hash e preencher o vetor de DDDs
     for (int i = 0; i < HASH_SIZE; i++) {
-        if (tabelaHash->tabela[i] != NULL) {
-            HashNo* atual = tabelaHash->tabela[i];
+        if (hashTable->tabela[i] != NULL) {
+            HashNode* atual = hashTable->tabela[i];
             ddds[count] = atual->ddd;
             count++;
         }
@@ -319,22 +319,22 @@ void imprimirArvores(TabelaHash* tabelaHash, int ordenacao) {
     // Percorrer os DDDs em ordem crescente
     for (int i = 0; i < count; i++) {
         int ddd = ddds[i];
-        AVLNo* hashNo = encontrarArvoreNaTabela(tabelaHash, ddd);
+        AVLNode* hashNode = encontrarArvoreNaTabela(hashTable, ddd);
 
-        printf("DDD: %d\n", ddd);
+        if (hashNode != NULL) {
+            printf("DDD: %d\n", ddd);  // Exibir o DDD da árvore
 
-        if (hashNo == NULL) {
-            printf("Árvore vazia.\n");
-        } else {
-            if (ordenacao == 0) {
-                imprimirEmOrdem(hashNo);
-            } else if (ordenacao == 1) {
-                imprimirPreOrdem(hashNo);
+            AVLNode* raiz = hashNode;
+
+            if (ordenacao == 1) {
+                printf("Ordenacao por numero de telefone (Em-ordem):\n");
+                imprimirEmOrdem(raiz);
             } else if (ordenacao == 2) {
-                imprimirPosOrdem(hashNo);
+                printf("Ordenacao por nome de usuario:\n");
+                imprimirPorNomeOrdenado(raiz);
             }
+            printf("\n");
         }
-        printf("\n");
     }
 }
 
