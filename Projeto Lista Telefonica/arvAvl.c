@@ -131,6 +131,19 @@ AVLNode* encontrarNodo(AVLNode* node, const char* numero) {
         return encontrarNodo(node->direita, numero);
 }
 
+//Busca binária(VERSÃO ALTERNATIVA DA FUNÇÃO DE CIMA, NÃO TESTEI SE ESTA FUNCIONAL)
+/*AVLNode* encontrarNodo(AVLNode* node, const char* numero) {
+    if (node == NULL || strcmp(node->numero, numero) == 0)
+        return node;
+
+    int cmp = strcmp(numero, node->numero);
+
+    if (cmp < node->numero)
+        return encontrarNodo(node->esquerda, numero);
+    else
+        return encontrarNodo(node->direita, numero);
+}*/
+
 // Encontra o nó com o menor número na árvore AVL e retorna o nó encontrado
 AVLNode* encontrarMenorNodo(AVLNode* node) {
     AVLNode* atual = node;
