@@ -117,7 +117,7 @@ AVLNode* inserir(AVLNode* node, const char* numero, const char* nome, const char
     return node;
 }
 
-// Busca um nó na árvore AVL pelo número do contato e retorna o nó encontrado ou NULL se não encontrado
+// Busca um nó na árvore AVL pelo número do contato e retorna o nó encontrado ou NULL se não encontrado(Busca Binária)
 AVLNode* encontrarNodo(AVLNode* node, const char* numero) {
     if (node == NULL || strcmp(node->numero, numero) == 0)
         return node;
