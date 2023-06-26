@@ -289,25 +289,25 @@ AVLNo* encontrarArvoreNaTabela(TabelaHash* tabelaHash, int ddd) {
 
 // Função para imprimir as árvores da tabela hash
 // Parâmetros: a tabela hash e a ordem de impressão das árvores (1 para ordenar por número, 2 para ordenar por nome)
-void imprimirArvores(HashTable* hashTable, int ordenacao) {
+void imprimirArvores(TabelaHash* tabelaHash, int ordenacao) {
     printf("Lista de arvores:\n");
 
     // Vetor para armazenar os DDDs presentes na tabela hash
     int ddds[HASH_SIZE];
-    int count = 0;
+    int cont = 0;
 
     // Percorrer a tabela hash e preencher o vetor de DDDs
     for (int i = 0; i < HASH_SIZE; i++) {
-        if (hashTable->tabela[i] != NULL) {
-            HashNode* atual = hashTable->tabela[i];
-            ddds[count] = atual->ddd;
-            count++;
+        if (tabelaHash->tabela[i] != NULL) {
+            HashNo* atual = tabelaHash->tabela[i];
+            ddds[cont] = atual->ddd;
+            cont++;
         }
     }
 
     // Ordenar os DDDs em ordem crescente
-    for (int i = 0; i < count - 1; i++) {
-        for (int j = i + 1; j < count; j++) {
+    for (int i = 0; i < cont - 1; i++) {
+        for (int j = i + 1; j < cont; j++) {
             if (ddds[j] < ddds[i]) {
                 int temp = ddds[i];
                 ddds[i] = ddds[j];
@@ -317,14 +317,14 @@ void imprimirArvores(HashTable* hashTable, int ordenacao) {
     }
 
     // Percorrer os DDDs em ordem crescente
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < cont; i++) {
         int ddd = ddds[i];
-        AVLNode* hashNode = encontrarArvoreNaTabela(hashTable, ddd);
+        AVLNo* hashNo = encontrarArvoreNaTabela(tabelaHash, ddd);
 
-        if (hashNode != NULL) {
+        if (hashNo != NULL) {
             printf("DDD: %d\n", ddd);  // Exibir o DDD da árvore
 
-            AVLNode* raiz = hashNode;
+            AVLNo* raiz = hashNo;
 
             if (ordenacao == 1) {
                 printf("Ordenacao por numero de telefone (Em-ordem):\n");
